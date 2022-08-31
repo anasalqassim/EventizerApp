@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1000834322970",
+    "project_id": "eventizer-d214e",
+    "storage_bucket": "eventizer-d214e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000834322970:android:e71d2a4a4620e1582577a3",
+        "android_client_info": {
+          "package_name": "com.anas.eventizer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1000834322970-r1fp00jlk7d0ful143eclh67cjtjqlvo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtwZ8Xoioky4dIRk3PX0YMjPYLio7FSUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1000834322970-r1fp00jlk7d0ful143eclh67cjtjqlvo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
