@@ -25,7 +25,7 @@ class ProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.initPersonalEvent("uwjgfdhsgdjgdjagd",true)
+
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +36,13 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+    }
+
+    private fun getPersonalEvents(userId:String,refresh:Boolean){
+
+        viewModel.initPersonalEvent(userId,refresh)
 
         viewModel.personalEventsLiveData.onEach { result ->
             when(result){

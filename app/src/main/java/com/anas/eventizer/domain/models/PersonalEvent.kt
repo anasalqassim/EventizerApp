@@ -1,7 +1,5 @@
 package com.anas.eventizer.domain.models
 
-import com.anas.eventizer.data.remote.EventLocationDto
-import com.anas.eventizer.data.remote.EventSupporterDto
 import java.util.*
 
 data class PersonalEvent(
@@ -12,5 +10,6 @@ data class PersonalEvent(
     val eventDate: Date,
     val eventOwnerId:String,
     val eventPicsUrls:List<String>,
-    val eventLocation: EventLocationDto,
+    val eventLocation: EventLocation,
+    var eventCategory: String
 )

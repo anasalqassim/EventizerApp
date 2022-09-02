@@ -1,9 +1,7 @@
-package com.anas.eventizer.data.remote
+package com.anas.eventizer.data.remote.dto
 
 import com.anas.eventizer.domain.models.PersonalEvent
-import java.util.Date
-import java.util.Objects
-import java.util.UUID
+import java.util.*
 
 data class PersonalEventDto(
     var id: String  = "",
@@ -24,5 +22,6 @@ fun PersonalEventDto.toPersonalEvent():PersonalEvent = PersonalEvent(
     eventDate ,
     eventOwnerId ,
     eventPicsUrls ,
-    eventLocation,
+    eventLocation.toEventLocation(),
+    eventCategory
 )

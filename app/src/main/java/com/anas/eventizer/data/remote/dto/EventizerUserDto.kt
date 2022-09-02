@@ -1,4 +1,4 @@
-package com.anas.eventizer.data.remote
+package com.anas.eventizer.data.remote.dto
 
 import com.anas.eventizer.domain.models.EventizerUser
 import java.util.UUID
