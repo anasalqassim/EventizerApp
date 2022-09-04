@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav"
-    app:startDestination="@id/eventsListFragment">
+    app:startDestination="@id/userLoginFragment">
 
     <fragment
         android:id="@+id/eventsListFragment"
@@ -20,4 +20,9 @@
         android:name="com.anas.eventizer.presentation.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/userLoginFragment"
+        android:name="com.anas.eventizer.presentation.userLogin.UserLoginFragment"
+        android:label="fragment_user_login"
+        tools:layout="@layout/fragment_user_login" />
 </navigation>

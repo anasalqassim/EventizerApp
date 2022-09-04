@@ -13,7 +13,6 @@ class AuthRepositoryImpl @Inject constructor(
         email: String,
         pwd: String
     ): Flow<AuthResult> {
-        //TODO: implement the logic of checking the email  and password form
         return authFirebaseAuthDataSource.loginUserByEmailAndPwd(email, pwd)
     }
 }

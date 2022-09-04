@@ -1,9 +1,12 @@
 package com.anas.eventizer.di
 
+import com.anas.eventizer.data.remote.AuthFirebaseAuthDataSource
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
+import com.anas.eventizer.data.repo.AuthRepositoryImpl
 import com.anas.eventizer.data.repo.PersonalEventsRepositoryImpl
 import com.anas.eventizer.data.repo.PublicEventsRepositoryImpl
 import com.anas.eventizer.domain.models.PersonalEvent
+import com.anas.eventizer.domain.repo.AuthRepository
 import com.anas.eventizer.domain.repo.PersonalEventsRepository
 import com.anas.eventizer.domain.repo.PublicEventsRepository
 import com.google.firebase.firestore.CollectionReference
@@ -72,4 +75,13 @@ object AppModule {
         PublicEventsRepositoryImpl(personalEventsFirestoreDataSource,
             )
 
+    @Provides
+    @Singleton
+    fun providesAuthFirebaseDataSource():AuthFirebaseAuthDataSource =
+        AuthFirebaseAuthDataSource()
+
+    @Provides
+    @Singleton
+    fun providesAuthRepository(authFirebaseAuthDataSource: AuthFirebaseAuthDataSource):AuthRepository =
+        AuthRepositoryImpl(authFirebaseAuthDataSource)
 }
