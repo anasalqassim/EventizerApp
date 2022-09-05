@@ -8,4 +8,6 @@ interface AuthRepository {
 
     suspend fun loginUserByEmailAndPwd(email:String,pwd:String): Flow<AuthResult>
 
+    suspend fun registerUserByEmailAndPwd(email:String,pwd:String): Flow<AuthResult>
+
 }

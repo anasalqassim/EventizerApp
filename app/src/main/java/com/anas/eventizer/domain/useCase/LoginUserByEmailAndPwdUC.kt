@@ -18,9 +18,7 @@ import javax.inject.Inject
 class LoginUserByEmailAndPwdUC @Inject constructor(
    private val authRepository: AuthRepository
 ) {
-    enum class PwdFormatCases{
-        SHORT_PASSWORD,NO_SPECIAL_CHAR,NO_CAPITAL_CHAR,VALID_PWD
-    }
+
 
 
     operator fun invoke(email:String,pwd:String):Flow<Resource<AuthResult>> = flow {
@@ -43,17 +41,6 @@ class LoginUserByEmailAndPwdUC @Inject constructor(
         }
 
     }
-    private fun checkPwdForm(pwd: String):PwdFormatCases {
 
-        return if (pwd.length < 4){
-            PwdFormatCases.SHORT_PASSWORD
-        }else if (!pwd.contains(Regex("/[`!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?~]/"))){
-            PwdFormatCases.NO_SPECIAL_CHAR
-        }else if (pwd.contains(Regex("[A-Z]"))){
-            PwdFormatCases.NO_CAPITAL_CHAR
-        }else{
-            PwdFormatCases.VALID_PWD
-        }
-    }
 
 }

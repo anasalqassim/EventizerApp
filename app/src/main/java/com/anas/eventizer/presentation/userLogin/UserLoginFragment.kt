@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anas.eventizer.R
+import com.anas.eventizer.utils.EmailAndPasswordValidator
 import com.anas.eventizer.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -30,9 +31,15 @@ class UserLoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TODO handle the different of wrong email and pwd
+        //TODO handle the different of wrong email and pwd in the viewModel
         startLoginFlow("anas@anas.com" , "Qwe123qwe")
 
+
+
+    }
+
+    private fun startLoginFlow(email:String, pwd:String){
+        viewModel.loginUserByEmailAndPwd(email, pwd)
         lifecycleScope.launchWhenCreated {
             viewModel.authResultStateFlow.collect{
                     authResult ->
@@ -49,12 +56,6 @@ class UserLoginFragment : Fragment() {
                 }
             }
         }
-
-    }
-
-    fun startLoginFlow(email:String,pwd:String){
-        viewModel.loginUserByEmailAndPwd(email, pwd)
-
 
     }
 

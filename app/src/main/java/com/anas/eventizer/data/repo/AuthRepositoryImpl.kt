@@ -15,4 +15,8 @@ class AuthRepositoryImpl @Inject constructor(
     ): Flow<AuthResult> {
         return authFirebaseAuthDataSource.loginUserByEmailAndPwd(email, pwd)
     }
+
+    override suspend fun registerUserByEmailAndPwd(email: String, pwd: String): Flow<AuthResult> {
+        return authFirebaseAuthDataSource.registerUserByEmailAndPwd(email, pwd)
+    }
 }
