@@ -1,3 +1,7 @@
 package com.anas.eventizer.domain.repo
 
-interface EventsRepository
+interface EventsRepository : PublicEventsRepository,PersonalEventsRepository{
+
+    suspend fun getAllUserEventsById()
+
+}

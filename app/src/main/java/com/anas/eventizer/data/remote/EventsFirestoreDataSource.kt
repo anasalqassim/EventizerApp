@@ -29,6 +29,7 @@ class EventsFirestoreDataSource @Inject constructor(
     companion object{
         const val PERSONAL_EVENT_COLLECTION_REF = "personalEvents"
         const val PUBLIC_EVENT_COLLECTION_REF = "publicEvents"
+
     }
 
     suspend fun getPersonalEvents(userId:String):List<PersonalEvent> {

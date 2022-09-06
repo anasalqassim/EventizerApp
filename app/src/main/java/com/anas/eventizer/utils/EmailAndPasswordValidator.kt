@@ -1,18 +1,22 @@
 package com.anas.eventizer.utils
 
-import com.anas.eventizer.domain.useCase.LoginUserByEmailAndPwdUC
+import android.util.Patterns
+import java.util.regex.Pattern
 
 object EmailAndPasswordValidator {
     //TODO COMPLETE IT
-    const val EMAIL_PATTERN = ""
-    const val PASSWORD_MIN_LENGTH = 8
+    private val emailPattern: Pattern = Patterns.EMAIL_ADDRESS
+    private const val PASSWORD_MIN_LENGTH = 8
 
     enum class PasswordCases{
-        SHORT_PASSWORD,NO_SPECIAL_CHAR,NO_CAPITAL_CHAR,VALID_PWD
+        SHORT_PASSWORD,
+        NO_SPECIAL_CHAR,
+        NO_CAPITAL_CHAR,
+        VALID_PWD
     }
 
     fun checkEmailFormat(email:String):Boolean{
-        return email.contains(Regex(EMAIL_PATTERN))
+        return email.contains(emailPattern.toRegex())
     }
 
     private fun checkPwdForm(pwd: String): PasswordCases {

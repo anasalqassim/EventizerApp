@@ -36,7 +36,6 @@ class UserRegisterFragment : Fragment() {
 
     }
 
-
     private fun startRegisterByEmailAndPwdFlow(email:String,pwd:String){
         viewModel.registerUserByEmailAndPwd(email, pwd)
 
