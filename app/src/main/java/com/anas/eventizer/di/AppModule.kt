@@ -9,8 +9,12 @@ import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.repo.AuthRepository
 import com.anas.eventizer.domain.repo.PersonalEventsRepository
 import com.anas.eventizer.domain.repo.PublicEventsRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -77,11 +81,28 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesAuthFirebaseDataSource():AuthFirebaseAuthDataSource =
-        AuthFirebaseAuthDataSource()
+    fun providesAuthFirebaseDataSource(firebaseAuth: FirebaseAuth,
+                                       @Named("usersCollection")
+                                       usersCollection: CollectionReference):AuthFirebaseAuthDataSource =
+        AuthFirebaseAuthDataSource(firebaseAuth,usersCollection)
 
     @Provides
     @Singleton
     fun providesAuthRepository(authFirebaseAuthDataSource: AuthFirebaseAuthDataSource):AuthRepository =
         AuthRepositoryImpl(authFirebaseAuthDataSource)
+
+    @Provides
+    @Singleton
+    fun providesFirebaseAuth():FirebaseAuth = Firebase.auth
+
+    @Provides
+    @Singleton
+    @Named("usersCollection")
+    fun providesFireStoreUsersCollection():CollectionReference = Firebase
+        .firestore
+        .collection(AuthFirebaseAuthDataSource.USERS_COLLECTION_REF)
+
+
+
+
 }

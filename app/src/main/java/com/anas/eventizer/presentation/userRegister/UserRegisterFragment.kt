@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anas.eventizer.R
+import com.anas.eventizer.data.remote.dto.UsersDto
 import com.anas.eventizer.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -32,12 +33,15 @@ class UserRegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val user = UsersDto()
+        startRegisterByEmailAndPwdFlow("anas1@gmail.com",
+            "Qwe123qwe",
+            user)
 
     }
 
-    private fun startRegisterByEmailAndPwdFlow(email:String,pwd:String){
-        viewModel.registerUserByEmailAndPwd(email, pwd)
+    private fun startRegisterByEmailAndPwdFlow(email:String,pwd:String,user:UsersDto){
+        viewModel.registerUserByEmailAndPwd(email, pwd, user)
 
         viewModel.authResultStateFlow.onEach { authResult ->
             when(authResult){
