@@ -60,11 +60,12 @@ object AppModule {
     @Singleton
     fun providesPersonalEventsDataSource(@Named("ioDispatcher") ioDispatcher: CoroutineDispatcher,
                                          @Named("personalEventsCollection") personalEventsCollection: CollectionReference,
-                                         @Named("publicEventsCollection") publicEventsCollection:CollectionReference
+                                         @Named("publicEventsCollection") publicEventsCollection:CollectionReference,
+                                         firebaseAuth: FirebaseAuth
     ):EventsFirestoreDataSource =
         EventsFirestoreDataSource(ioDispatcher,
             personalEventsCollection,
-            publicEventsCollection)
+            publicEventsCollection,firebaseAuth)
 
 
     @Provides

@@ -1,6 +1,7 @@
 package com.anas.eventizer.data.repo
 
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
+import com.anas.eventizer.data.remote.dto.PersonalEventDto
 import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.repo.PersonalEventsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +41,12 @@ class PersonalEventsRepositoryImpl @Inject constructor(
 
     }
 
+    override suspend fun deletePersonalEvent(personalEvent: PersonalEvent) =
+        personalEventsFirestoreDataSource.deletePersonalEvent(personalEvent)
 
+    override suspend fun addPersonalEvent(personalEventDto: PersonalEventDto) {
+        personalEventsFirestoreDataSource.addPersonalEvent(personalEventDto)
+    }
 
 
 }

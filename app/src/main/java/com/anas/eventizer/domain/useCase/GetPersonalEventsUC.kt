@@ -17,7 +17,7 @@ class GetPersonalEventsUC @Inject constructor(
              val personalEvents = personaEventsRepositoryImpl.getPersonalEvents(userId,refresh)
              emit(Resource.Success<List<PersonalEvent>>(personalEvents))
 
-         }catch ( e:Exception){
+         }catch (e:Exception){
              emit(Resource.Error<List<PersonalEvent>>(massage = e.localizedMessage ?: "something gone wrong"))
          }
      }

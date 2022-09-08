@@ -1,6 +1,7 @@
 package com.anas.eventizer.data.repo
 
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
+import com.anas.eventizer.data.remote.dto.PublicEventDto
 import com.anas.eventizer.domain.models.PublicEvent
 import com.anas.eventizer.domain.repo.PublicEventsRepository
 import kotlinx.coroutines.flow.Flow
@@ -71,6 +72,14 @@ class PublicEventsRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
 
 
+    }
+
+    override suspend fun deletePublicEvent(publicEvent: PublicEvent) {
+        eventsFirestoreDataSource.deletePublicEvent(publicEvent)
+    }
+
+    override suspend fun addPublicEvent(publicEventDto: PublicEventDto) {
+        eventsFirestoreDataSource.addPublicEvent(publicEventDto)
     }
 
     private fun clearSecMinHour(date:Calendar):Calendar {
