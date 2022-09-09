@@ -65,7 +65,8 @@ object AppModule {
     ):EventsFirestoreDataSource =
         EventsFirestoreDataSource(ioDispatcher,
             personalEventsCollection,
-            publicEventsCollection,firebaseAuth)
+            publicEventsCollection,
+            firebaseAuth)
 
 
     @Provides
@@ -84,8 +85,15 @@ object AppModule {
     @Singleton
     fun providesAuthFirebaseDataSource(firebaseAuth: FirebaseAuth,
                                        @Named("usersCollection")
-                                       usersCollection: CollectionReference):AuthFirebaseAuthDataSource =
-        AuthFirebaseAuthDataSource(firebaseAuth,usersCollection)
+                                       usersCollection: CollectionReference,
+                                       @Named("eventSupportersCollection")
+                                        eventSupportersCollection: CollectionReference
+    ):AuthFirebaseAuthDataSource =
+        AuthFirebaseAuthDataSource(
+            firebaseAuth,
+            usersCollection,
+            eventSupportersCollection
+        )
 
     @Provides
     @Singleton
@@ -102,6 +110,13 @@ object AppModule {
     fun providesFireStoreUsersCollection():CollectionReference = Firebase
         .firestore
         .collection(AuthFirebaseAuthDataSource.USERS_COLLECTION_REF)
+
+    @Provides
+    @Singleton
+    @Named("eventSupportersCollection")
+    fun providesFireStoreEventSupportersCollection():CollectionReference = Firebase
+        .firestore
+        .collection(AuthFirebaseAuthDataSource.EVENTS_SUPPORTERS_COLLECTION_REF)
 
 
 

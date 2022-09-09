@@ -1,6 +1,7 @@
 package com.anas.eventizer.data.repo
 
 import com.anas.eventizer.data.remote.AuthFirebaseAuthDataSource
+import com.anas.eventizer.data.remote.dto.EventSupporterDto
 import com.anas.eventizer.data.remote.dto.UsersDto
 import com.anas.eventizer.domain.repo.AuthRepository
 import com.google.firebase.auth.AuthResult
@@ -34,5 +35,18 @@ class AuthRepositoryImpl @Inject constructor(
                 }
         }
 
+    }
+
+    override suspend fun registerUserByEmailAndPwd(email: String, pwd: String): Flow<AuthResult> = flow{
+        authFirebaseAuthDataSource
+            .registerUserByEmailAndPwd(email, pwd)
+            .collect{
+                emit(it)
+            }
+    }
+
+    override suspend fun registerSupporterToDatabase(eventSupporterDto: EventSupporterDto) {
+        authFirebaseAuthDataSource
+            .registerSupporterToDatabase(eventSupporterDto)
     }
 }

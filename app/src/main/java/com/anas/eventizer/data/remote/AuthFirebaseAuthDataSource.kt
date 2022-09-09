@@ -3,17 +3,12 @@ package com.anas.eventizer.data.remote
 
 import android.net.Uri
 import android.security.keystore.UserNotAuthenticatedException
-import androidx.core.net.toUri
+import com.anas.eventizer.data.remote.dto.EventSupporterDto
 import com.anas.eventizer.data.remote.dto.UsersDto
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.kiwimob.firestore.coroutines.await
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -24,16 +19,18 @@ class AuthFirebaseAuthDataSource @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     @Named("usersCollection")
     private val usersCollection:CollectionReference,
-
+    @Named("eventSupportersCollection")
+    private val eventSupportersCollection: CollectionReference
 ) {
 
     companion object{
         const val USERS_COLLECTION_REF = "eventizerUsers"
+        const val EVENTS_SUPPORTERS_COLLECTION_REF = "eventSupporters"
     }
+
 
     suspend fun loginUserByEmailAndPwd(email:String,pwd:String):Flow<AuthResult>
         = flow {
-        val firebaseAuth = Firebase.auth
        val authResult =  firebaseAuth.signInWithEmailAndPassword(email,pwd)
         emit(authResult.await())
     }
@@ -72,6 +69,22 @@ class AuthFirebaseAuthDataSource @Inject constructor(
             usersCollection
                 .document(firebaseAuth.currentUser!!.uid)
                 .set(user)
+                .await()
+        }else{
+            throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
+        }
+    }
+
+
+    /**
+    register the supporter to the firestore cloud database
+    the function will throw exception if the user was not logged in
+     **/
+    suspend fun registerSupporterToDatabase(eventSupporterDto: EventSupporterDto){
+        if (firebaseAuth.currentUser != null){
+            eventSupportersCollection
+                .document(firebaseAuth.currentUser!!.uid)
+                .set(eventSupporterDto)
                 .await()
         }else{
             throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")

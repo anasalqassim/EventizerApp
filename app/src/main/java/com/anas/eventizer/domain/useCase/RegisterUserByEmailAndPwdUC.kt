@@ -38,4 +38,29 @@ class RegisterUserByEmailAndPwdUC @Inject constructor(
 
     }
 
+
+    operator fun invoke(email:String,pwd:String):Flow<Resource<AuthResult>> = flow {
+
+        try {
+            emit(Resource.Loading())
+            val registerAuthResult = authRepository.registerUserByEmailAndPwd(email, pwd)
+            registerAuthResult.collect {
+                emit(Resource.Success(data = it))
+            }
+        }catch (e:FirebaseAuthWeakPasswordException){
+            emit(Resource.Error(massage = e.reason ?: "weak password"))
+        }catch (e:FirebaseAuthEmailException){
+            emit(Resource.Error(massage = e.errorCode))
+        }catch (e:FirebaseAuthUserCollisionException){
+            emit(Resource.Error(massage = e.errorCode))
+        }catch (e:FirebaseNetworkException){
+            emit(Resource.Error(massage = e.localizedMessage ?: "there was a network error" ))
+        }catch (e: FirebaseAuthInvalidCredentialsException){
+            emit(Resource.Error(massage = e.errorCode ))
+        }catch (e:UserNotAuthenticatedException){
+            emit(Resource.Error(massage = e.localizedMessage?: "there was an authentication error"))
+        }
+
+    }
+
 }

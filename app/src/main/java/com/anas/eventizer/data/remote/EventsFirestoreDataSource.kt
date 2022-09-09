@@ -2,10 +2,7 @@ package com.anas.eventizer.data.remote
 
 import android.security.keystore.UserNotAuthenticatedException
 import com.anas.eventizer.data.EventNotOwnedByUserException
-import com.anas.eventizer.data.remote.dto.PersonalEventDto
-import com.anas.eventizer.data.remote.dto.PublicEventDto
-import com.anas.eventizer.data.remote.dto.toPersonalEvent
-import com.anas.eventizer.data.remote.dto.toPublicEvent
+import com.anas.eventizer.data.remote.dto.*
 import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.models.PublicEvent
 import com.google.firebase.auth.FirebaseAuth
@@ -34,7 +31,11 @@ class EventsFirestoreDataSource @Inject constructor(
     companion object{
         const val PERSONAL_EVENT_COLLECTION_REF = "personalEvents"
         const val PUBLIC_EVENT_COLLECTION_REF = "publicEvents"
+
     }
+
+
+
 
     suspend fun getPersonalEvents(userId:String):List<PersonalEvent> {
         return  withContext(ioDispatcher){
