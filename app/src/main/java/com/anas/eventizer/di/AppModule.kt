@@ -1,17 +1,13 @@
 package com.anas.eventizer.di
 
 import android.app.Application
-import android.content.Context
 import com.anas.eventizer.data.remote.AuthFirebaseAuthDataSource
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
 import com.anas.eventizer.data.remote.LocationGoogleMapsDataSource
 import com.anas.eventizer.data.repo.AuthRepositoryImpl
-import com.anas.eventizer.data.repo.PersonalEventsRepositoryImpl
-import com.anas.eventizer.data.repo.PublicEventsRepositoryImpl
-import com.anas.eventizer.domain.models.PersonalEvent
+import com.anas.eventizer.data.repo.EventsRepositoryImpl
 import com.anas.eventizer.domain.repo.AuthRepository
-import com.anas.eventizer.domain.repo.PersonalEventsRepository
-import com.anas.eventizer.domain.repo.PublicEventsRepository
+import com.anas.eventizer.domain.repo.EventsRepository
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseAuth
@@ -74,21 +70,16 @@ object AppModule {
             firebaseAuth)
 
 
-    @Provides
-    @Singleton
-    fun providesPersonalEventsRepository(eventsFirestoreDataSource: EventsFirestoreDataSource,
-                                         coroutineScope: CoroutineScope,
-                                         locationGoogleMapsDataSource: LocationGoogleMapsDataSource):PersonalEventsRepository =
-        PersonalEventsRepositoryImpl(
-            eventsFirestoreDataSource,
-            coroutineScope,
-            locationGoogleMapsDataSource)
 
     @Provides
     @Singleton
-    fun providesPublicEventsRepository(personalEventsFirestoreDataSource: EventsFirestoreDataSource):PublicEventsRepository =
-        PublicEventsRepositoryImpl(personalEventsFirestoreDataSource,
-            )
+    fun providesEventsRepository(eventsFirestoreDataSource: EventsFirestoreDataSource,
+                                 coroutineScope: CoroutineScope,
+                                 locationGoogleMapsDataSource: LocationGoogleMapsDataSource) : EventsRepository =
+        EventsRepositoryImpl(eventsFirestoreDataSource,
+            coroutineScope,
+            locationGoogleMapsDataSource
+        )
 
     @Provides
     @Singleton
