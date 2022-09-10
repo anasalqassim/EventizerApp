@@ -1,6 +1,8 @@
 package com.anas.eventizer.domain.models
 
+import com.google.type.LatLng
+
 data class EventLocation(
-    val longitude:Float,
-    val latitude:Float,
+    var latLng: LatLng? ,
+    var placeId:String?
 )

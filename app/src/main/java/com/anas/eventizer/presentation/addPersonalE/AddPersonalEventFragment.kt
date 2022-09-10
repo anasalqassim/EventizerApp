@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anas.eventizer.R
+import com.anas.eventizer.data.remote.dto.EventLocationDto
 import com.anas.eventizer.data.remote.dto.PersonalEventDto
 import com.anas.eventizer.databinding.FragmentAddPersonalEventBinding
 import com.anas.eventizer.utils.Resource
@@ -39,7 +40,7 @@ class AddPersonalEventFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val personal = PersonalEventDto()
+        val personal = PersonalEventDto(eventLocation = EventLocationDto(null,"ChIJAAAAAAAAAAAR-fjafWVgaSM"))
         addNewPersonalEvent(personal)
 
     }

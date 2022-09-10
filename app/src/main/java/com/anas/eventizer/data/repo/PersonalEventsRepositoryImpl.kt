@@ -1,6 +1,8 @@
 package com.anas.eventizer.data.repo
 
+import android.util.Log
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
+import com.anas.eventizer.data.remote.LocationGoogleMapsDataSource
 import com.anas.eventizer.data.remote.dto.PersonalEventDto
 import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.repo.PersonalEventsRepository
@@ -12,7 +14,8 @@ import javax.inject.Inject
 
 class PersonalEventsRepositoryImpl @Inject constructor(
      private val  personalEventsFirestoreDataSource: EventsFirestoreDataSource,
-     private val externalScope:CoroutineScope
+     private val externalScope:CoroutineScope,
+     private val locationGoogleMapsDataSource: LocationGoogleMapsDataSource
     )
     : PersonalEventsRepository {
 
@@ -45,6 +48,13 @@ class PersonalEventsRepositoryImpl @Inject constructor(
         personalEventsFirestoreDataSource.deletePersonalEvent(personalEvent)
 
     override suspend fun addPersonalEvent(personalEventDto: PersonalEventDto) {
+//        personalEventDto.eventLocation.placeId?.let {
+//            locationGoogleMapsDataSource.getPlaceImages(it)
+//                .collect{
+//                    Log.d("PersonalEventsRepositoryImpl","size = ${it.size}  list = $it")
+//                }
+//        }
+
         personalEventsFirestoreDataSource.addPersonalEvent(personalEventDto)
     }
 

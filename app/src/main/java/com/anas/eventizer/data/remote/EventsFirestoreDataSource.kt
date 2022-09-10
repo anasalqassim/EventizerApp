@@ -24,8 +24,8 @@ class EventsFirestoreDataSource @Inject constructor(
     private val personalEventCollection: CollectionReference,
     @Named("publicEventsCollection")
     private val publicEventCollection: CollectionReference,
+    private val firebaseAuth: FirebaseAuth,
 
-    private val firebaseAuth: FirebaseAuth
 
 ) {
     companion object{
@@ -98,6 +98,8 @@ class EventsFirestoreDataSource @Inject constructor(
             val newDoc = personalEventCollection.document()
             personalEventDto.id = newDoc.id
             personalEventDto.eventOwnerId = currentUser.uid
+
+
             newDoc
                 .set(personalEventDto)
                 .await()

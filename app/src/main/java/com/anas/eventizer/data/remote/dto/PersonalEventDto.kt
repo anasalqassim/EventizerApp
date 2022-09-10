@@ -11,7 +11,7 @@ data class PersonalEventDto(
     var eventDate: Date = Date(),
     var eventOwnerId:String = "",
     var eventPicsUrls:List<String> = emptyList(),
-    var eventLocation:EventLocationDto = EventLocationDto(0f,0f),
+    var eventLocation:EventLocationDto = EventLocationDto(),
     var eventCategory: String = ""
 )
 fun PersonalEventDto.toPersonalEvent():PersonalEvent = PersonalEvent(

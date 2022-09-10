@@ -1,7 +1,10 @@
 package com.anas.eventizer.di
 
+import android.app.Application
+import android.content.Context
 import com.anas.eventizer.data.remote.AuthFirebaseAuthDataSource
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
+import com.anas.eventizer.data.remote.LocationGoogleMapsDataSource
 import com.anas.eventizer.data.repo.AuthRepositoryImpl
 import com.anas.eventizer.data.repo.PersonalEventsRepositoryImpl
 import com.anas.eventizer.data.repo.PublicEventsRepositoryImpl
@@ -9,6 +12,8 @@ import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.repo.AuthRepository
 import com.anas.eventizer.domain.repo.PersonalEventsRepository
 import com.anas.eventizer.domain.repo.PublicEventsRepository
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
@@ -71,9 +76,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesPersonalEventsRepository(eventsFirestoreDataSource: EventsFirestoreDataSource,coroutineScope: CoroutineScope):PersonalEventsRepository =
-        PersonalEventsRepositoryImpl(eventsFirestoreDataSource,
-            coroutineScope)
+    fun providesPersonalEventsRepository(eventsFirestoreDataSource: EventsFirestoreDataSource,
+                                         coroutineScope: CoroutineScope,
+                                         locationGoogleMapsDataSource: LocationGoogleMapsDataSource):PersonalEventsRepository =
+        PersonalEventsRepositoryImpl(
+            eventsFirestoreDataSource,
+            coroutineScope,
+            locationGoogleMapsDataSource)
 
     @Provides
     @Singleton
@@ -119,6 +128,15 @@ object AppModule {
         .collection(AuthFirebaseAuthDataSource.EVENTS_SUPPORTERS_COLLECTION_REF)
 
 
+    @Provides
+    @Singleton
+    fun providesPlacesClient(context: Application):PlacesClient =
+         Places.createClient(context)
+
+    @Provides
+    @Singleton
+    fun providesLocationGoogleMapsDataSource(placesClient: PlacesClient) =
+        LocationGoogleMapsDataSource(placesClient)
 
 
 }

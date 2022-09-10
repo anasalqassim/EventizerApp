@@ -1,13 +1,14 @@
 package com.anas.eventizer.data.remote.dto
 
 import com.anas.eventizer.domain.models.EventLocation
+import com.google.type.LatLng
 
 data class EventLocationDto(
-    var longitude:Float = 0f,
-    var latitude:Float = 0f,
+    var latLng: LatLng? = null,
+    var placeId:String? = null
 )
-fun EventLocationDto.toEventLocation() =
+fun EventLocationDto.toEventLocation() : EventLocation =
     EventLocation(
-        longitude = longitude,
-        latitude = latitude
+        latLng = latLng,
+        placeId = placeId
     )
