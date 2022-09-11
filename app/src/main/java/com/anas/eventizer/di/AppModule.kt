@@ -16,6 +16,8 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,12 +64,22 @@ object AppModule {
     fun providesPersonalEventsDataSource(@Named("ioDispatcher") ioDispatcher: CoroutineDispatcher,
                                          @Named("personalEventsCollection") personalEventsCollection: CollectionReference,
                                          @Named("publicEventsCollection") publicEventsCollection:CollectionReference,
-                                         firebaseAuth: FirebaseAuth
+                                         firebaseAuth: FirebaseAuth,
+                                         @Named("personalEventsStorageRef")
+                                         personalEventStorageRef:StorageReference,
+                                         @Named("publicEventsStorageRef")
+                                         publicEventStorageRef:StorageReference,
+                                         locationGoogleMapsDataSource: LocationGoogleMapsDataSource,
+                                         context: Application
     ):EventsFirestoreDataSource =
         EventsFirestoreDataSource(ioDispatcher,
             personalEventsCollection,
             publicEventsCollection,
-            firebaseAuth)
+            firebaseAuth,
+            locationGoogleMapsDataSource,
+            personalEventStorageRef,
+            publicEventStorageRef,
+            context)
 
 
 
@@ -128,6 +140,25 @@ object AppModule {
     @Singleton
     fun providesLocationGoogleMapsDataSource(placesClient: PlacesClient) =
         LocationGoogleMapsDataSource(placesClient)
+
+    @Provides
+    @Singleton
+    fun providesFirebaseStorage() =
+        Firebase.storage.reference
+
+
+    @Provides
+    @Singleton
+    @Named("personalEventsStorageRef")
+    fun providesPersonalEventStorageRef(storageRef:StorageReference) =
+        storageRef.child(EventsFirestoreDataSource.PERSONAL_EVENTS_STORAGE_REF)
+
+
+    @Provides
+    @Singleton
+    @Named("PublicEventsStorageRef")
+    fun providesPublicEventStorageRef(storageRef:StorageReference) =
+        storageRef.child(EventsFirestoreDataSource.PUBLIC_EVENTS_STORAGE_REF)
 
 
 }

@@ -25,11 +25,25 @@ class EventsRepositoryImpl @Inject constructor(
     private val locationGoogleMapsDataSource: LocationGoogleMapsDataSource
 ) : EventsRepository {
 
+    companion object{
+
+    }
+
     //for thread safe var caching
     private val latestPublicEventsMutex = Mutex()
 
     //for var caching
     private var latestPublicEvents: List<PublicEvent> = emptyList()
+
+
+    override suspend fun uploadEventImages(
+        images: List<ByteArray>,
+        eventId: String,
+        eventType: String
+    ) {
+
+
+    }
 
     override suspend fun getPublicEvents(refresh:Boolean): Flow<List<PublicEvent>> {
 
@@ -127,16 +141,6 @@ class EventsRepositoryImpl @Inject constructor(
         eventsFirestoreDataSource.deletePersonalEvent(personalEvent)
 
     override suspend fun addPersonalEvent(personalEventDto: PersonalEventDto) {
-//        personalEventDto.eventLocation.placeId?.let {
-//            locationGoogleMapsDataSource.getPlaceImages(it)
-//                .collect{
-//                    Log.d("PersonalEventsRepositoryImpl","size = ${it.size}  list = $it")
-//                }
-//        }
-
-
-
-
         eventsFirestoreDataSource.addPersonalEvent(personalEventDto)
     }
 

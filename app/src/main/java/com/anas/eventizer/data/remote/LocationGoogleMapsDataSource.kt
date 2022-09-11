@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 class LocationGoogleMapsDataSource @Inject constructor(
@@ -28,7 +29,7 @@ class LocationGoogleMapsDataSource @Inject constructor(
      * get MAX_NUMBER_OF_IMAGES for a place
      * and throws PlaceHasNoImagesException if the place has no images
      */
-    suspend fun getPlaceImages(placeId:String):Flow<List<Bitmap>>
+    suspend fun getPlaceImages(placeId:String):Flow<List<ByteArray>>
         = flow {
         val placeRequest = FetchPlaceRequest.newInstance(placeId, PLACE_FIELDS)
         val place = placesClient.fetchPlace(placeRequest)
@@ -54,7 +55,15 @@ class LocationGoogleMapsDataSource @Inject constructor(
                 }
             }
 
-            emit(photosBitmap)
+            val photosByteArrays = mutableListOf<ByteArray>()
+            for (photoBitmap in photosBitmap){
+                val baos = ByteArrayOutputStream()
+                photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                val data = baos.toByteArray()
+                photosByteArrays.add(data)
+            }
+
+            emit(photosByteArrays)
         }else{
             throw PlaceHasNoImagesException(PLACE_HAS_NO_IMG_EXCEPTION_MSG)
         }

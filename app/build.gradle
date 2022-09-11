@@ -102,6 +102,8 @@ dependencies {
     implementation 'com.google.android.libraries.places:places:2.6.0'
     implementation 'com.google.maps.android:places-ktx:2.0.0'
 
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
 
     implementation "androidx.work:work-runtime-ktx:2.7.1"
 }
