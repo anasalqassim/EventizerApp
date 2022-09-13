@@ -1,8 +1,10 @@
 package com.anas.eventizer.di
 
 import android.app.Application
+import androidx.work.WorkManager
 import com.anas.eventizer.data.remote.AuthFirebaseAuthDataSource
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
+import com.anas.eventizer.data.remote.EventsTasksDataSource
 import com.anas.eventizer.data.remote.LocationGoogleMapsDataSource
 import com.anas.eventizer.data.repo.AuthRepositoryImpl
 import com.anas.eventizer.data.repo.EventsRepositoryImpl
@@ -87,10 +89,11 @@ object AppModule {
     @Singleton
     fun providesEventsRepository(eventsFirestoreDataSource: EventsFirestoreDataSource,
                                  coroutineScope: CoroutineScope,
-                                 locationGoogleMapsDataSource: LocationGoogleMapsDataSource) : EventsRepository =
-        EventsRepositoryImpl(eventsFirestoreDataSource,
+                                 eventsTasksDataSource: EventsTasksDataSource) : EventsRepository =
+        EventsRepositoryImpl(
+            eventsFirestoreDataSource,
             coroutineScope,
-            locationGoogleMapsDataSource
+            eventsTasksDataSource
         )
 
     @Provides
@@ -156,9 +159,18 @@ object AppModule {
 
     @Provides
     @Singleton
-    @Named("PublicEventsStorageRef")
+    @Named("publicEventsStorageRef")
     fun providesPublicEventStorageRef(storageRef:StorageReference) =
         storageRef.child(EventsFirestoreDataSource.PUBLIC_EVENTS_STORAGE_REF)
 
+    @Provides
+    @Singleton
+    fun providesWorkManger(context: Application) =
+        WorkManager.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun providesEventsTasksDataSource(workManager: WorkManager) =
+        EventsTasksDataSource(workManager)
 
 }

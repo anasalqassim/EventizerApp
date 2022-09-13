@@ -120,6 +120,11 @@ class EventsFirestoreDataSource @Inject constructor(
         }
     }
 
+    suspend fun getPublicEventsByEventId(eventId: String):Flow<PublicEvent>{
+
+        TODO("implement the logic")
+    }
+
     suspend fun getPublicEvents():Flow<List<PublicEvent>>{
 
         return flow {

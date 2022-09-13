@@ -3,6 +3,7 @@ package com.anas.eventizer.data.repo
 import android.graphics.Bitmap
 import androidx.work.workDataOf
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
+import com.anas.eventizer.data.remote.EventsTasksDataSource
 import com.anas.eventizer.data.remote.LocationGoogleMapsDataSource
 import com.anas.eventizer.data.remote.dto.PersonalEventDto
 import com.anas.eventizer.data.remote.dto.PublicEventDto
@@ -22,7 +23,7 @@ import javax.inject.Inject
 class EventsRepositoryImpl @Inject constructor(
     private val eventsFirestoreDataSource: EventsFirestoreDataSource,
     private val externalScope: CoroutineScope,
-    private val locationGoogleMapsDataSource: LocationGoogleMapsDataSource
+    private val eventsTasksDataSource: EventsTasksDataSource
 ) : EventsRepository {
 
     companion object{
@@ -37,12 +38,10 @@ class EventsRepositoryImpl @Inject constructor(
 
 
     override suspend fun uploadEventImages(
-        images: List<ByteArray>,
         eventId: String,
         eventType: String
     ) {
-
-
+        eventsFirestoreDataSource.uploadEventImages(eventId,eventType)
     }
 
     override suspend fun getPublicEvents(refresh:Boolean): Flow<List<PublicEvent>> {
@@ -91,7 +90,9 @@ class EventsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPublicEventsById(userId: String): Flow<List<PublicEvent>> {
-        TODO("Not yet implemented")
+        return flow {
+            eventsFirestoreDataSource
+        }
 
 
     }
@@ -102,6 +103,7 @@ class EventsRepositoryImpl @Inject constructor(
 
     override suspend fun addPublicEvent(publicEventDto: PublicEventDto) {
         eventsFirestoreDataSource.addPublicEvent(publicEventDto)
+
     }
 
     private fun clearSecMinHour(date:Calendar):Calendar {
@@ -142,6 +144,7 @@ class EventsRepositoryImpl @Inject constructor(
 
     override suspend fun addPersonalEvent(personalEventDto: PersonalEventDto) {
         eventsFirestoreDataSource.addPersonalEvent(personalEventDto)
+        eventsTasksDataSource.uploadEventImages()
     }
 
 }

@@ -1,25 +1,39 @@
 package com.anas.eventizer.data.workers
 
+import android.app.Application
 import android.content.Context
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.anas.eventizer.data.EventsDataStore
+import com.anas.eventizer.data.repo.EventsRepositoryImpl
 import com.anas.eventizer.domain.repo.EventsRepository
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.single
 import javax.inject.Inject
 
 class UploadPlaceImagesWorker @Inject  constructor(
-    private val eventsRepository: EventsRepository,
     private val context: Context,
-    prams:WorkerParameters) : CoroutineWorker(context,prams) {
+     prams:WorkerParameters) : CoroutineWorker(context,prams) {
+
+
     override suspend fun doWork(): Result {
 
-        val eventId = EventsDataStore.getEventId(context)
-
-        val eventType = EventsDataStore.getEventType(context)
 
 
+//         EventsDataStore.getEventId(context)
+//            .collect{ eventId ->
+//                 EventsDataStore.getEventType(context)
+//                    .collect{ eventType ->
+//
+//                        eventsRepository.uploadEventImages(eventId,eventType)
+//                    }
+//        }
 
 
-        TODO("Not yet implemented")
+
+
+        return Result.success()
+
     }
 }

@@ -44,6 +44,10 @@ object EventsDataStore {
         context.eventsDataStore.edit {
             it[keyPref] = eventType
         }
+
+
+
+
     }
 
 }
