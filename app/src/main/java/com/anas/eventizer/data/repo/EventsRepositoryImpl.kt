@@ -11,6 +11,7 @@ import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.models.PublicEvent
 import com.anas.eventizer.domain.repo.EventsRepository
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach

@@ -1,12 +1,9 @@
 package com.anas.eventizer.data.remote
 
-import androidx.work.Constraints
-import androidx.work.Data
-import androidx.work.NetworkType
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.anas.eventizer.data.workers.UploadPlaceImagesWorker
-import com.anas.eventizer.domain.repo.EventsRepository
 import javax.inject.Inject
 
 class EventsTasksDataSource @Inject constructor(
@@ -16,7 +13,11 @@ class EventsTasksDataSource @Inject constructor(
 
         val uploadImagesRequest = OneTimeWorkRequestBuilder<UploadPlaceImagesWorker>()
             .build()
-        workManager.enqueue(uploadImagesRequest)
+        workManager.enqueueUniqueWork(
+            "work",
+            ExistingWorkPolicy.KEEP,
+            uploadImagesRequest
+        )
     }
 
 }

@@ -40,7 +40,7 @@ object EventsDataStore {
     }
 
     suspend  fun setEventType(eventType:String , context: Context){
-        val keyPref = stringPreferencesKey(EVENT_ID_PREF_KEY)
+        val keyPref = stringPreferencesKey(EVENT_TYPE_PREF_KEY)
         context.eventsDataStore.edit {
             it[keyPref] = eventType
         }

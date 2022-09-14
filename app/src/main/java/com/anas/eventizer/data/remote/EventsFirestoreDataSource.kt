@@ -2,6 +2,7 @@ package com.anas.eventizer.data.remote
 
 import android.content.Context
 import android.security.keystore.UserNotAuthenticatedException
+import android.util.Log
 import com.anas.eventizer.data.EventNotOwnedByUserException
 import com.anas.eventizer.data.EventsDataStore
 import com.anas.eventizer.data.remote.dto.*
@@ -13,6 +14,7 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.StorageReference
 import com.kiwimob.firestore.coroutines.await
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
@@ -39,6 +41,8 @@ class EventsFirestoreDataSource @Inject constructor(
     private val context: Context
 
 ) {
+
+
     companion object{
         const val PERSONAL_EVENT_COLLECTION_REF = "personalEvents"
         const val PUBLIC_EVENT_COLLECTION_REF = "publicEvents"
@@ -55,20 +59,22 @@ class EventsFirestoreDataSource @Inject constructor(
                                   eventType: String){
         if (eventType == PUBLIC_EVENT_KEY){
             val event = publicEventCollection.document(eventId).get().await().toObject(PublicEventDto::class.java)
+
             event?.eventLocation?.placeId?.let {
                 locationGoogleMapsDataSource.getPlaceImages(it)
                     .collect{ photosByteArray ->
                         val photosUrls = mutableListOf<String>()
                         for (photoBytes in photosByteArray){
                             val imageName = "${event.eventOwnerId}${System.currentTimeMillis()}"
-
                             val uploadRef = publicEventStorageRef.child(imageName)
 
                             val uploadTask = uploadRef.putBytes(photoBytes)
                             uploadTask.await()
 
+
                             val uploadUri = uploadRef.downloadUrl.await()
                             photosUrls.add(uploadUri.toString())
+
 
                         }
 
@@ -98,7 +104,7 @@ class EventsFirestoreDataSource @Inject constructor(
                         }
 
                         personalEventCollection.document(eventId)
-                            .set(mapOf("eventPicsUrls" to photosUrls))
+                            .set(mapOf("eventPicsUrls" to photosUrls), SetOptions.merge())
                             .await()
 
                     }
@@ -137,7 +143,6 @@ class EventsFirestoreDataSource @Inject constructor(
                     .map { it.toPublicEvent() }
                 )
             }
-
         }
     }
 
@@ -173,21 +178,21 @@ class EventsFirestoreDataSource @Inject constructor(
         val currentUser = firebaseAuth.currentUser
         if (currentUser != null){
             val newDoc = personalEventCollection.document()
+
             personalEventDto.id = newDoc.id
-
-
             personalEventDto.eventOwnerId = currentUser.uid
+
             newDoc
                 .set(personalEventDto)
                 .await()
 
             EventsDataStore.setEventId(newDoc.id,context)
             EventsDataStore.setEventType(PERSONAL_EVENT_KEY,context)
+            delay(2000)
         }else{
             throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
         }
     }
-
 
     /**
      * this function will throw UserNotAuthenticatedException
@@ -226,12 +231,13 @@ class EventsFirestoreDataSource @Inject constructor(
 
 
             publicEventDto.eventOwnerId = currentUser.uid
+            EventsDataStore.setEventId(newDoc.id,context)
+            EventsDataStore.setEventType(PUBLIC_EVENT_KEY,context)
             newDoc
                 .set(publicEventDto)
                 .await()
 
-            EventsDataStore.setEventId(newDoc.id,context)
-            EventsDataStore.setEventType(PUBLIC_EVENT_KEY,context)
+
         }else{
             throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
         }
