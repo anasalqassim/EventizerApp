@@ -8,9 +8,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.kiwimob.firestore.coroutines.await
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
@@ -19,7 +17,7 @@ class LocationGoogleMapsDataSource @Inject constructor(
 ) {
 
     companion object{
-        const val MAX_NUMBER_OF_IMAGES = 3
+        const val MAX_NUMBER_OF_IMAGES = 5
         val PLACE_FIELDS = listOf(Place.Field.PHOTO_METADATAS,Place.Field.NAME)
         const val PLACE_HAS_NO_IMG_EXCEPTION_MSG = "IMAGE_HAS_IMGS"
     }
@@ -58,7 +56,7 @@ class LocationGoogleMapsDataSource @Inject constructor(
             val photosByteArrays = mutableListOf<ByteArray>()
             for (photoBitmap in photosBitmap){
                 val baos = ByteArrayOutputStream()
-                photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                photoBitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos)
                 val data = baos.toByteArray()
                 photosByteArrays.add(data)
             }

@@ -1,17 +1,13 @@
 package com.anas.eventizer.data.repo
 
-import android.graphics.Bitmap
-import androidx.work.workDataOf
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
 import com.anas.eventizer.data.remote.EventsTasksDataSource
-import com.anas.eventizer.data.remote.LocationGoogleMapsDataSource
 import com.anas.eventizer.data.remote.dto.PersonalEventDto
 import com.anas.eventizer.data.remote.dto.PublicEventDto
 import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.models.PublicEvent
 import com.anas.eventizer.domain.repo.EventsRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
@@ -27,9 +23,6 @@ class EventsRepositoryImpl @Inject constructor(
     private val eventsTasksDataSource: EventsTasksDataSource
 ) : EventsRepository {
 
-    companion object{
-
-    }
 
     //for thread safe var caching
     private val latestPublicEventsMutex = Mutex()
@@ -37,12 +30,24 @@ class EventsRepositoryImpl @Inject constructor(
     //for var caching
     private var latestPublicEvents: List<PublicEvent> = emptyList()
 
+    //for thread safe var caching
+    private val latestPersonalEventsMutex = Mutex()
+
+    //for var caching
+    private var latestPersonalEvents: List<PersonalEvent> = emptyList()
+
+
 
     override suspend fun uploadEventImages(
         eventId: String,
         eventType: String
     ) {
         eventsFirestoreDataSource.uploadEventImages(eventId,eventType)
+    }
+
+    override suspend fun addPublicEvent(publicEventDto: PublicEventDto) {
+        eventsFirestoreDataSource.addPublicEvent(publicEventDto)
+
     }
 
     override suspend fun getPublicEvents(refresh:Boolean): Flow<List<PublicEvent>> {
@@ -102,11 +107,6 @@ class EventsRepositoryImpl @Inject constructor(
         eventsFirestoreDataSource.deletePublicEvent(publicEvent)
     }
 
-    override suspend fun addPublicEvent(publicEventDto: PublicEventDto) {
-        eventsFirestoreDataSource.addPublicEvent(publicEventDto)
-
-    }
-
     private fun clearSecMinHour(date:Calendar):Calendar {
         date.clear(Calendar.SECOND)
         date.clear(Calendar.MINUTE)
@@ -114,13 +114,10 @@ class EventsRepositoryImpl @Inject constructor(
         return date
     }
 
-
-    //for thread safe var caching
-    private val latestPersonalEventsMutex = Mutex()
-
-    //for var caching
-    private var latestPersonalEvents: List<PersonalEvent> = emptyList()
-
+    override suspend fun addPersonalEvent(personalEventDto: PersonalEventDto) {
+        eventsFirestoreDataSource.addPersonalEvent(personalEventDto)
+        eventsTasksDataSource.uploadEventImages()
+    }
 
     override suspend fun getPersonalEvents(userId: String,refresh:Boolean): List<PersonalEvent> {
 
@@ -142,10 +139,4 @@ class EventsRepositoryImpl @Inject constructor(
 
     override suspend fun deletePersonalEvent(personalEvent: PersonalEvent) =
         eventsFirestoreDataSource.deletePersonalEvent(personalEvent)
-
-    override suspend fun addPersonalEvent(personalEventDto: PersonalEventDto) {
-        eventsFirestoreDataSource.addPersonalEvent(personalEventDto)
-        eventsTasksDataSource.uploadEventImages()
-    }
-
 }

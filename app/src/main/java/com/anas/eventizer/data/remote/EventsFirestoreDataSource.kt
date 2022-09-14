@@ -39,7 +39,6 @@ class EventsFirestoreDataSource @Inject constructor(
     @Named("publicEventsStorageRef")
     private val publicEventStorageRef:StorageReference,
     private val context: Context
-
 ) {
 
 
@@ -65,7 +64,8 @@ class EventsFirestoreDataSource @Inject constructor(
                     .collect{ photosByteArray ->
                         val photosUrls = mutableListOf<String>()
                         for (photoBytes in photosByteArray){
-                            val imageName = "${event.eventOwnerId}${System.currentTimeMillis()}"
+                            val imageName = "${event.eventOwnerId}/" +
+                                    "${event.eventOwnerId}${System.currentTimeMillis()}"
                             val uploadRef = publicEventStorageRef.child(imageName)
 
                             val uploadTask = uploadRef.putBytes(photoBytes)
@@ -91,7 +91,8 @@ class EventsFirestoreDataSource @Inject constructor(
                     .collect{ photosByteArray ->
                         val photosUrls = mutableListOf<String>()
                         for (photoBytes in photosByteArray){
-                            val imageName = "${event.eventOwnerId}${System.currentTimeMillis()}"
+                            val imageName = "${event.eventOwnerId}/" +
+                                    "${event.eventOwnerId}${System.currentTimeMillis()}"
 
                             val uploadRef = personalEventStorageRef.child(imageName)
 
@@ -115,6 +116,30 @@ class EventsFirestoreDataSource @Inject constructor(
     }
 
 
+    /**
+     * this function will throw UserNotAuthenticatedException
+     * if there is no logged in user
+     */
+    suspend fun addPersonalEvent(personalEventDto: PersonalEventDto){
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser != null){
+            val newDoc = personalEventCollection.document()
+
+            personalEventDto.id = newDoc.id
+            personalEventDto.eventOwnerId = currentUser.uid
+
+            newDoc
+                .set(personalEventDto)
+                .await()
+
+            EventsDataStore.setEventId(newDoc.id,context)
+            EventsDataStore.setEventType(PERSONAL_EVENT_KEY,context)
+            delay(2000)
+        }else{
+            throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
+        }
+    }
+
     suspend fun getPersonalEvents(userId:String):List<PersonalEvent> {
         return  withContext(ioDispatcher){
             personalEventCollection
@@ -123,26 +148,6 @@ class EventsFirestoreDataSource @Inject constructor(
                 .await()
                 .toObjects(PersonalEventDto::class.java)
                 .map { it.toPersonalEvent() }
-        }
-    }
-
-    suspend fun getPublicEventsByEventId(eventId: String):Flow<PublicEvent>{
-
-        TODO("implement the logic")
-    }
-
-    suspend fun getPublicEvents():Flow<List<PublicEvent>>{
-
-        return flow {
-            withContext(ioDispatcher){
-                emit(
-                    publicEventCollection
-                    .get()
-                    .await()
-                    .toObjects(PublicEventDto::class.java)
-                    .map { it.toPublicEvent() }
-                )
-            }
         }
     }
 
@@ -170,53 +175,6 @@ class EventsFirestoreDataSource @Inject constructor(
         }
     }
 
-    /**
-     * this function will throw UserNotAuthenticatedException
-     * if there is no logged in user
-     */
-    suspend fun addPersonalEvent(personalEventDto: PersonalEventDto){
-        val currentUser = firebaseAuth.currentUser
-        if (currentUser != null){
-            val newDoc = personalEventCollection.document()
-
-            personalEventDto.id = newDoc.id
-            personalEventDto.eventOwnerId = currentUser.uid
-
-            newDoc
-                .set(personalEventDto)
-                .await()
-
-            EventsDataStore.setEventId(newDoc.id,context)
-            EventsDataStore.setEventType(PERSONAL_EVENT_KEY,context)
-            delay(2000)
-        }else{
-            throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
-        }
-    }
-
-    /**
-     * this function will throw UserNotAuthenticatedException
-     * if there is no logged in user and it will throw
-     * EventNotOwnedByUserException if the current user id
-     * dose not equal to the ownerId of the event
-     */
-    suspend fun deletePublicEvent(publicEvent: PublicEvent){
-        val currentUser = firebaseAuth.currentUser
-        if (currentUser != null){
-            if (currentUser.uid == publicEvent.eventOwnerId){
-                personalEventCollection
-                    .document(publicEvent.id)
-                    .delete()
-                    .await()
-            }else{
-                //TODO MAKE CONST CODE
-                throw EventNotOwnedByUserException("EVENT_NOT_OWNED_BY_USER")
-            }
-        }else{
-            //TODO MAKE CONST CODE
-            throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
-        }
-    }
 
     /**
      * this function will throw UserNotAuthenticatedException
@@ -239,6 +197,50 @@ class EventsFirestoreDataSource @Inject constructor(
 
 
         }else{
+            throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
+        }
+    }
+
+    suspend fun getPublicEvents():Flow<List<PublicEvent>>{
+
+        return flow {
+            withContext(ioDispatcher){
+                emit(
+                    publicEventCollection
+                        .get()
+                        .await()
+                        .toObjects(PublicEventDto::class.java)
+                        .map { it.toPublicEvent() }
+                )
+            }
+        }
+    }
+
+    suspend fun getPublicEventByEventId(eventId: String):Flow<PublicEvent>{
+
+        TODO("implement the logic")
+    }
+
+    /**
+     * this function will throw UserNotAuthenticatedException
+     * if there is no logged in user and it will throw
+     * EventNotOwnedByUserException if the current user id
+     * dose not equal to the ownerId of the event
+     */
+    suspend fun deletePublicEvent(publicEvent: PublicEvent){
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser != null){
+            if (currentUser.uid == publicEvent.eventOwnerId){
+                personalEventCollection
+                    .document(publicEvent.id)
+                    .delete()
+                    .await()
+            }else{
+                //TODO MAKE CONST CODE
+                throw EventNotOwnedByUserException("EVENT_NOT_OWNED_BY_USER")
+            }
+        }else{
+            //TODO MAKE CONST CODE
             throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
         }
     }
