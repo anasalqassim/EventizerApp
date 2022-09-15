@@ -15,23 +15,34 @@ import javax.inject.Inject
 class UserRegisterViewModel @Inject constructor(
     private val registerUserByEmailAndPwdUC: RegisterUserByEmailAndPwdUC
 ) : ViewModel() {
-    private val _authResultStateFlow: MutableStateFlow<Resource<AuthResult>> =
-        MutableStateFlow(Resource.Loading())
 
-    val authResultStateFlow: StateFlow<Resource<AuthResult>> = _authResultStateFlow
+    private val _registerUiStateFlow: MutableStateFlow<RegisterUiState> =
+        MutableStateFlow(RegisterUiState())
+
+    val authResultStateFlow: StateFlow<RegisterUiState> = _registerUiStateFlow
 
 
     fun registerUserByEmailAndPwd(email:String,pwd:String,user:UsersDto){
         registerUserByEmailAndPwdUC(email, pwd, user).onEach { authResult ->
             when(authResult){
                 is Resource.Error -> {
-                    _authResultStateFlow.value = Resource.Error(massage = authResult.massage!!)
+                    _registerUiStateFlow.update {
+                        RegisterUiState(errorMsg = authResult.massage)
+                    }
+
                 }
                 is Resource.Loading -> {
-                    _authResultStateFlow.value = Resource.Loading()
+                    _registerUiStateFlow.update { RegisterUiState(isLoading = true) }
                 }
                 is Resource.Success -> {
-                    _authResultStateFlow.value = Resource.Success(data = authResult.data!!)
+                    _registerUiStateFlow.update {
+                        RegisterUiState(
+                            registerResult = true,
+                            displayName = authResult.data?.user?.displayName,
+                            profilePic = authResult.data?.user?.photoUrl.toString(),
+                            userType = user.userType
+                        )
+                    }
                 }
             }
         }.launchIn(viewModelScope)

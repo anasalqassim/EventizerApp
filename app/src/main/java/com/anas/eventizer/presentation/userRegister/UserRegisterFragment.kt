@@ -38,26 +38,27 @@ class UserRegisterFragment : Fragment() {
             "Qwe123qwe",
             user)
 
-    }
 
-    private fun startRegisterByEmailAndPwdFlow(email:String,pwd:String,user:UsersDto){
-        viewModel.registerUserByEmailAndPwd(email, pwd, user)
 
-        viewModel.authResultStateFlow.onEach { authResult ->
-            when(authResult){
-                is Resource.Error -> {
-                    Log.d(TAG , "the error is ${authResult.massage}")
+        viewModel.authResultStateFlow.onEach { registerUiState ->
+            when{
+                registerUiState.errorMsg != null -> {
+                    Log.d(TAG , "the error is ${registerUiState.errorMsg}")
                 }
-                is Resource.Loading -> {
+                registerUiState.isLoading -> {
                     Log.d(TAG , "Loading...")
                 }
-                is Resource.Success -> {
-                    Log.d(TAG , "the data is ${authResult.data}")
+                registerUiState.registerResult -> {
+                    Log.d(TAG , "the data is $registerUiState")
                 }
             }
 
         }.launchIn(lifecycleScope)
 
+    }
+
+    private fun startRegisterByEmailAndPwdFlow(email:String,pwd:String,user:UsersDto){
+        viewModel.registerUserByEmailAndPwd(email, pwd, user)
     }
 
 
