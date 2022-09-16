@@ -5,6 +5,7 @@ import android.net.Uri
 import android.security.keystore.UserNotAuthenticatedException
 import com.anas.eventizer.data.remote.dto.EventSupporterDto
 import com.anas.eventizer.data.remote.dto.UsersDto
+import com.anas.eventizer.domain.models.User
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
@@ -12,6 +13,7 @@ import com.google.firebase.firestore.CollectionReference
 import com.kiwimob.firestore.coroutines.await
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -29,10 +31,18 @@ class AuthFirebaseAuthDataSource @Inject constructor(
     }
 
 
-    suspend fun loginUserByEmailAndPwd(email:String,pwd:String):Flow<AuthResult>
+    suspend fun loginUserByEmailAndPwd(email:String,pwd:String):Flow<User>
         = flow {
-       val authResult =  firebaseAuth.signInWithEmailAndPassword(email,pwd)
-        emit(authResult.await())
+        val user = User()
+        val authResult =  firebaseAuth.signInWithEmailAndPassword(email,pwd).await()
+        val databaseUser = retrieveUserInfoFromDatabase(authResult.user?.uid!!)
+
+        user.userType = databaseUser.userType
+        user.uid = authResult.user?.uid
+        user.displayName = authResult.user?.displayName
+        user.profilePicUrl = authResult.user?.photoUrl.toString()
+
+        emit(user)
     }
 
     suspend fun registerUserByEmailAndPwd(email:String,pwd:String):Flow<AuthResult>
@@ -55,6 +65,18 @@ class AuthFirebaseAuthDataSource @Inject constructor(
                 .currentUser!!
                 .updateProfile(profileReq)
                 .await()
+        }else{
+            throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
+        }
+    }
+
+    private suspend fun retrieveUserInfoFromDatabase(userId:String):UsersDto{
+        if (firebaseAuth.currentUser != null){
+            return usersCollection
+                .document(userId)
+                .get()
+                .await()
+                .toObject(UsersDto::class.java) ?: throw UserNotFoundException("NO_DATABASE_RECORD")
         }else{
             throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
         }

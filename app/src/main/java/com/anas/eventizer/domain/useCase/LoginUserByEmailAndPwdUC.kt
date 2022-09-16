@@ -1,15 +1,12 @@
 package com.anas.eventizer.domain.useCase
 
+import com.anas.eventizer.data.remote.UserNotFoundException
+import com.anas.eventizer.domain.models.User
 import com.anas.eventizer.domain.repo.AuthRepository
 import com.anas.eventizer.utils.Resource
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuthActionCodeException
-import com.google.firebase.auth.FirebaseAuthEmailException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseAuthMultiFactorException
-import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseAuthWebException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,7 +18,7 @@ class LoginUserByEmailAndPwdUC @Inject constructor(
 
 
 
-    operator fun invoke(email:String,pwd:String):Flow<Resource<AuthResult>> = flow {
+    operator fun invoke(email:String,pwd:String):Flow<Resource<User>> = flow {
 
         try {
             emit(Resource.Loading())
@@ -30,7 +27,9 @@ class LoginUserByEmailAndPwdUC @Inject constructor(
                 emit(Resource.Success(data = it))
             }
 
-        } catch (e:FirebaseAuthInvalidUserException){
+        }catch (e:UserNotFoundException){
+            emit(Resource.Error(massage = e.localizedMessage ?: "USER_NOT_BEEN_FOUND"))
+        }catch (e:FirebaseAuthInvalidUserException){
             emit(Resource.Error(massage = e.errorCode))
         }catch (e:FirebaseAuthInvalidCredentialsException){
             emit(Resource.Error(massage = e.errorCode))

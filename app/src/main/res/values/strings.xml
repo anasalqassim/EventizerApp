@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Eventizer</string>
+    <string name="inValid_email_format">please enter valid email</string>
+    <string name="no_cap_letter">Password must contain capital letter</string>
+    <string name="short_pwd">Password must be loger than 8 letters</string>
+    <string name="no_special_char">Password must contain special char</string>
 </resources>

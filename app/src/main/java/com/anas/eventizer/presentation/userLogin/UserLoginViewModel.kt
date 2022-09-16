@@ -21,23 +21,30 @@ import javax.inject.Inject
 class UserLoginViewModel @Inject constructor(
     private val loginUserByEmailAndPwdUC: LoginUserByEmailAndPwdUC
 ): ViewModel() {
-    private val _authResultStateFlow: MutableStateFlow<Resource<AuthResult>> =
-        MutableStateFlow(Resource.Loading())
+    private val _loginUiStateFlow: MutableStateFlow<LoginUiState> =
+        MutableStateFlow(LoginUiState())
 
-    val authResultStateFlow: StateFlow<Resource<AuthResult>> = _authResultStateFlow
+    val loginUiStateFlow: StateFlow<LoginUiState> = _loginUiStateFlow
 
     fun loginUserByEmailAndPwd(email:String,pwd:String){
 
         loginUserByEmailAndPwdUC(email,pwd).onEach{ authResult ->
             when(authResult){
                 is Resource.Error -> {
-                    _authResultStateFlow.value = Resource.Error(massage = authResult.massage!!)
+                    _loginUiStateFlow.update {   LoginUiState(errorMsg = authResult.massage )}
                 }
                 is Resource.Loading -> {
-                    _authResultStateFlow.value = Resource.Loading()
+                    _loginUiStateFlow.update {   LoginUiState(isLoading = true)}
                 }
                 is Resource.Success -> {
-                    _authResultStateFlow.value = Resource.Success(data = authResult.data!!)
+
+                    _loginUiStateFlow.update {   LoginUiState(
+                        loginResult = true,
+                        displayName = authResult.data?.displayName,
+                        profilePicUrl = authResult.data?.profilePicUrl.toString(),
+                        userId = authResult.data?.uid,
+                        userType = authResult.data?.userType,
+                    )}
                 }
             }
 

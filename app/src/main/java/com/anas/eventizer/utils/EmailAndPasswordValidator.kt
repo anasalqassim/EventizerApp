@@ -16,16 +16,17 @@ object EmailAndPasswordValidator {
     }
 
     fun checkEmailFormat(email:String):Boolean{
+
         return email.contains(emailPattern.toRegex())
     }
 
-    private fun checkPwdForm(pwd: String): PasswordCases {
+     fun checkPwdForm(pwd: String): PasswordCases {
 
-        return if (pwd.length < 4){
+        return if (pwd.length < PASSWORD_MIN_LENGTH){
             PasswordCases.SHORT_PASSWORD
-        }else if (!pwd.contains(Regex("/[`!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?~]/"))){
+        }else if (!pwd.contains(Regex("[`!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>?~]"))){
             PasswordCases.NO_SPECIAL_CHAR
-        }else if (pwd.contains(Regex("[A-Z]"))){
+        }else if (!pwd.contains(Regex("[A-Z]"))){
             PasswordCases.NO_CAPITAL_CHAR
         }else{
             PasswordCases.VALID_PWD

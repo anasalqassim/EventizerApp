@@ -27,7 +27,7 @@ class UserRegisterViewModel @Inject constructor(
             when(authResult){
                 is Resource.Error -> {
                     _registerUiStateFlow.update {
-                        RegisterUiState(errorMsg = authResult.massage)
+                       RegisterUiState(errorMsg = authResult.massage)
                     }
 
                 }
