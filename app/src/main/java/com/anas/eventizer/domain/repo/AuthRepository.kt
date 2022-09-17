@@ -1,6 +1,5 @@
 package com.anas.eventizer.domain.repo
 
-import com.anas.eventizer.data.remote.dto.EventSupporterDto
 import com.anas.eventizer.data.remote.dto.UsersDto
 import com.anas.eventizer.domain.models.User
 import com.google.firebase.auth.AuthResult
@@ -15,5 +14,4 @@ interface AuthRepository {
     suspend fun registerUserByEmailAndPwd(email:String,pwd:String): Flow<AuthResult>
 
 
-    suspend fun registerSupporterToDatabase(eventSupporterDto: EventSupporterDto)
 }

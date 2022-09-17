@@ -3,8 +3,7 @@ package com.anas.eventizer.data.remote
 
 import android.net.Uri
 import android.security.keystore.UserNotAuthenticatedException
-import com.anas.eventizer.data.remote.dto.EventSupporterDto
-import com.anas.eventizer.data.remote.dto.UsersDto
+import com.anas.eventizer.data.remote.dto.*
 import com.anas.eventizer.domain.models.User
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -13,16 +12,13 @@ import com.google.firebase.firestore.CollectionReference
 import com.kiwimob.firestore.coroutines.await
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Named
 
 class AuthFirebaseAuthDataSource @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     @Named("usersCollection")
-    private val usersCollection:CollectionReference,
-    @Named("eventSupportersCollection")
-    private val eventSupportersCollection: CollectionReference
+    private val usersCollection:CollectionReference
 ) {
 
     companion object{
@@ -33,6 +29,7 @@ class AuthFirebaseAuthDataSource @Inject constructor(
 
     suspend fun loginUserByEmailAndPwd(email:String,pwd:String):Flow<User>
         = flow {
+
         val user = User()
         val authResult =  firebaseAuth.signInWithEmailAndPassword(email,pwd).await()
         val databaseUser = retrieveUserInfoFromDatabase(authResult.user?.uid!!)
@@ -58,8 +55,8 @@ class AuthFirebaseAuthDataSource @Inject constructor(
     suspend fun updateUserInfo(displayName:String? = null,photoUri: Uri? = null){
         if (firebaseAuth.currentUser != null){
             val profileReq = userProfileChangeRequest {
-                if (displayName.isNullOrEmpty()){ this.displayName = displayName}
-                if (photoUri != null) this.photoUri = photoUri
+                if (!displayName.isNullOrEmpty()){ this.displayName = displayName}
+                if (photoUri != null) {this.photoUri = photoUri}
             }
             firebaseAuth
                 .currentUser!!
@@ -98,18 +95,5 @@ class AuthFirebaseAuthDataSource @Inject constructor(
     }
 
 
-    /**
-    register the supporter to the firestore cloud database
-    the function will throw exception if the user was not logged in
-     **/
-    suspend fun registerSupporterToDatabase(eventSupporterDto: EventSupporterDto){
-        if (firebaseAuth.currentUser != null){
-            eventSupportersCollection
-                .document(firebaseAuth.currentUser!!.uid)
-                .set(eventSupporterDto)
-                .await()
-        }else{
-            throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
-        }
-    }
+
 }

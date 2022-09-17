@@ -1,26 +1,23 @@
 package com.anas.eventizer.data.repo
 
 import com.anas.eventizer.data.remote.AuthFirebaseAuthDataSource
-import com.anas.eventizer.data.remote.dto.EventSupporterDto
 import com.anas.eventizer.data.remote.dto.UsersDto
 import com.anas.eventizer.domain.models.User
 import com.anas.eventizer.domain.repo.AuthRepository
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authFirebaseAuthDataSource: AuthFirebaseAuthDataSource
 ) : AuthRepository {
+
     override suspend fun loginUserByEmailAndPwd(
         email: String,
         pwd: String
     ): Flow<User> {
         return authFirebaseAuthDataSource.loginUserByEmailAndPwd(email, pwd)
-
     }
 
     override suspend fun registerUserByEmailAndPwd(
@@ -48,8 +45,5 @@ class AuthRepositoryImpl @Inject constructor(
             }
     }
 
-    override suspend fun registerSupporterToDatabase(eventSupporterDto: EventSupporterDto) {
-        authFirebaseAuthDataSource
-            .registerSupporterToDatabase(eventSupporterDto)
-    }
+
 }

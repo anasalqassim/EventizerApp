@@ -3,7 +3,6 @@ package com.anas.eventizer.presentation.registerEventSupporter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anas.eventizer.data.remote.dto.EventSupporterDto
-import com.anas.eventizer.domain.useCase.RegisterEventSupporterUC
 import com.anas.eventizer.domain.useCase.RegisterUserByEmailAndPwdUC
 import com.anas.eventizer.utils.Resource
 import com.google.firebase.auth.AuthResult

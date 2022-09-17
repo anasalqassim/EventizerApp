@@ -90,10 +90,8 @@ class UserLoginFragment : Fragment(),OnClickListener {
                 }else{
                     emailTxtField.error = null
                 }
-
                 if (emailTxtField.error == null){
                     startLoginFlow(email, pwd)
-                    Log.d(TAG, "onClick: ")
                 }
 
             }
