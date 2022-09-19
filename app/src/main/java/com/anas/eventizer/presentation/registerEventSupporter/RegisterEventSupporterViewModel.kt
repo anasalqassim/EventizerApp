@@ -2,7 +2,6 @@ package com.anas.eventizer.presentation.registerEventSupporter
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anas.eventizer.data.remote.dto.EventSupporterDto
 import com.anas.eventizer.domain.useCase.RegisterUserByEmailAndPwdUC
 import com.anas.eventizer.utils.Resource
 import com.google.firebase.auth.AuthResult
@@ -16,7 +15,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterEventSupporterViewModel @Inject constructor(
-    private val registerEventSupporterUC: RegisterEventSupporterUC,
     private val registerUserByEmailAndPwdUC: RegisterUserByEmailAndPwdUC
 ) : ViewModel() {
 
@@ -31,25 +29,6 @@ class RegisterEventSupporterViewModel @Inject constructor(
 
     val registerStateFlow: StateFlow<Resource<String>> = _registerStateFlow
 
-    fun registerEventSupporterToDatabase(eventSupporterDto: EventSupporterDto){
-
-        registerEventSupporterUC(eventSupporterDto).onEach { result ->
-            when(result){
-
-                is Resource.Error -> {
-                    _registerStateFlow.value = Resource.Error(massage = result.massage!!)
-                }
-
-                is Resource.Loading -> {
-                    _registerStateFlow.value = Resource.Loading()
-                }
-
-                is Resource.Success -> {
-                    _registerStateFlow.value = Resource.Success(data = result.data!!)
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
 
 
     fun registerUserByEmailPwd(email:String,pwd:String){

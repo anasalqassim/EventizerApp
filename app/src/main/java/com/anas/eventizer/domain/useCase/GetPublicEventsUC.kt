@@ -1,5 +1,6 @@
 package com.anas.eventizer.domain.useCase
 
+import android.util.Log
 import com.anas.eventizer.domain.models.PublicEvent
 import com.anas.eventizer.domain.repo.EventsRepository
 import com.anas.eventizer.domain.repo.PublicEventsRepository
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+private const val TAG = "GetPublicEventsUC"
 class GetPublicEventsUC @Inject constructor(
     private val eventsRepository: EventsRepository
 ) {

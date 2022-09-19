@@ -21,7 +21,7 @@ class AddPublicEventViewModel @Inject constructor(
     private val _addingStateFlow: MutableStateFlow<Resource<Unit>> =
         MutableStateFlow(Resource.Loading())
 
-    val deletionStateFlow: StateFlow<Resource<Unit>> = _addingStateFlow
+    val addingStateFlow: StateFlow<Resource<Unit>> = _addingStateFlow
 
 
     fun addPublicEvent(publicEventDto: PublicEventDto){

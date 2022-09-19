@@ -183,7 +183,7 @@ class EventsFirestoreDataSource @Inject constructor(
     suspend fun addPublicEvent(publicEventDto: PublicEventDto){
         val currentUser = firebaseAuth.currentUser
         if (currentUser != null){
-            val newDoc = personalEventCollection.document()
+            val newDoc = publicEventCollection.document()
             publicEventDto.id = newDoc.id
 
 
@@ -204,7 +204,7 @@ class EventsFirestoreDataSource @Inject constructor(
     suspend fun getPublicEvents():Flow<List<PublicEvent>>{
 
         return flow {
-            withContext(ioDispatcher){
+
                 emit(
                     publicEventCollection
                         .get()
@@ -212,7 +212,7 @@ class EventsFirestoreDataSource @Inject constructor(
                         .toObjects(PublicEventDto::class.java)
                         .map { it.toPublicEvent() }
                 )
-            }
+
         }
     }
 

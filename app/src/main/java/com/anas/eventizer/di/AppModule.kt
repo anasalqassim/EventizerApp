@@ -58,7 +58,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesIoCoroutineScope():CoroutineScope = CoroutineScope(Dispatchers.Default)
+    fun providesIoCoroutineScope():CoroutineScope = CoroutineScope(Dispatchers.IO)
 
 
     @Provides
@@ -106,9 +106,7 @@ object AppModule {
     ):AuthFirebaseAuthDataSource =
         AuthFirebaseAuthDataSource(
             firebaseAuth,
-            usersCollection,
-            eventSupportersCollection
-        )
+            usersCollection)
 
     @Provides
     @Singleton
