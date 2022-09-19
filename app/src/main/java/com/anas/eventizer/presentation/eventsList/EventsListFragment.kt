@@ -44,7 +44,7 @@ class EventsListFragment : Fragment() {
                     Log.d(TAG, "Loading.. ")
                 }
                 is Resource.Success -> {
-                    Log.d(TAG, "result = ${result.data!!.size}")
+                    val states = result.data
 
                 }
             }

@@ -7,10 +7,7 @@ import com.anas.eventizer.domain.useCase.GetPublicEventsUC
 import com.anas.eventizer.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,12 +15,12 @@ class EventsListViewModel @Inject constructor(
     private val getPublicEventsUC: GetPublicEventsUC,
     private val externalScope:CoroutineScope
 ): ViewModel() {
-    private val _publicEventsStateFlow: MutableStateFlow<Resource<List<PublicEvent>>> =
+    private val _publicEventsStateFlow: MutableStateFlow<PublicEventsUiState> =
         MutableStateFlow(
-        Resource.Loading()
+        PublicEventsUiState()
     )
 
-    val publicEventsStateFlow: StateFlow<Resource<List<PublicEvent>>> = _publicEventsStateFlow
+    val publicEventsStateFlow: StateFlow<PublicEventsUiState> = _publicEventsStateFlow
 
 
     fun getPublicEvents(refresh:Boolean = false){
@@ -31,13 +28,29 @@ class EventsListViewModel @Inject constructor(
             .onEach { result->
                 when(result){
                     is Resource.Error -> {
-                        _publicEventsStateFlow.value = Resource.Error(massage = result.massage!!)
+                        _publicEventsStateFlow.update {
+                            PublicEventsUiState( errorMsg = result.massage!!)
+                        }
                     }
                     is Resource.Loading -> {
-                        _publicEventsStateFlow.value = Resource.Loading()
+                        _publicEventsStateFlow.update {
+                            PublicEventsUiState(isLoading = true)
+                        }
                     }
                     is Resource.Success -> {
-                        _publicEventsStateFlow.value = Resource.Success(data = result.data!!)
+                        _publicEventsStateFlow.update {
+                            val publicEvent = result.data!!.map {
+                                PublicEventItemUiState(
+                                    title = it.eventName,
+                                    isOwner = false,
+                                    eventPicsUrl = it.eventPicsUrls,
+                                    eventLocation = it.eventLocation,
+                                    id = it.id
+                                )
+                            }
+                            PublicEventsUiState(events = publicEvent)
+
+                        }
                     }
                 }
 
