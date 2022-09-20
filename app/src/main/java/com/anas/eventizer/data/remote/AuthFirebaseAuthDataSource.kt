@@ -89,6 +89,7 @@ class AuthFirebaseAuthDataSource @Inject constructor(
                 .document(firebaseAuth.currentUser!!.uid)
                 .set(user)
                 .await()
+
         }else{
             throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
         }
