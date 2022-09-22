@@ -15,4 +15,5 @@ data class PublicEventItemUiState(
     val eventPicsUrl:List<String> = emptyList(),
     val eventLocation: EventLocation,
     val id:String,
+    val date:String,
 )

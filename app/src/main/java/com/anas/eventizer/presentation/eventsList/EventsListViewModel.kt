@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import java.util.*
 import javax.inject.Inject
 
 private const val TAG = "EventsListViewModel"
@@ -27,8 +28,8 @@ class EventsListViewModel @Inject constructor(
     val publicEventsStateFlow: StateFlow<PublicEventsUiState> = _publicEventsStateFlow
 
 
-    fun getPublicEvents(refresh:Boolean = false){
-        getPublicEventsUC(refresh)
+    fun getPublicEvents(date:Calendar,refresh:Boolean = false){
+        getPublicEventsUC(date)
             .onEach { result->
                 when(result){
                     is Resource.Error -> {
@@ -44,12 +45,20 @@ class EventsListViewModel @Inject constructor(
                     is Resource.Success -> {
                         _publicEventsStateFlow.update {
                             val publicEventState = result.data!!.map {
+
+                                val month = it.eventDate.getDisplayName(Calendar.MONTH,Calendar.ALL_STYLES,
+                                    Locale.getDefault()
+                                )
+                                val day = it.eventDate.get(Calendar.DAY_OF_MONTH)
+                                val date = "$month $day"
+
                                 PublicEventItemUiState(
-                                    title = it.eventName,
+                                    title = "كشته",
                                     isOwner = false,
                                     eventPicsUrl = it.eventPicsUrls,
                                     eventLocation = it.eventLocation,
-                                    id = it.id
+                                    id = it.id,
+                                    date = date
                                 )
                             }
                             PublicEventsUiState(events = publicEventState)

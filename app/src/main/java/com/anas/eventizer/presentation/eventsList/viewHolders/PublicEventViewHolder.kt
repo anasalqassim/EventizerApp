@@ -20,7 +20,6 @@ class PublicEventViewHolder @Inject constructor (
         val layoutManager = LinearLayoutManager(binding.root.context,
             LinearLayoutManager.HORIZONTAL,
             false)
-
         binding.imagesRv.layoutManager = layoutManager
         binding.imagesRv.setHasFixedSize(false)
         val snapHelper = PagerSnapHelper()
@@ -29,7 +28,10 @@ class PublicEventViewHolder @Inject constructor (
         }
         binding.imagesRv.adapter = ImagesAdapter(state.eventPicsUrl)
 
+
+
         binding.titleTv.text = state.title
+        binding.dateTv.text = state.date
 
     }
 

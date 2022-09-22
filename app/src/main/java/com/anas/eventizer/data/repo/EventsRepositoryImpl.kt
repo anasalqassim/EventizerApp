@@ -1,5 +1,6 @@
 package com.anas.eventizer.data.repo
 
+import android.util.Log
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
 import com.anas.eventizer.data.remote.EventsTasksDataSource
 import com.anas.eventizer.data.remote.dto.PersonalEventDto
@@ -10,6 +11,7 @@ import com.anas.eventizer.domain.repo.EventsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -17,6 +19,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
+private const val TAG = "EventsRepositoryImpl"
 class EventsRepositoryImpl @Inject constructor(
     private val eventsFirestoreDataSource: EventsFirestoreDataSource,
     private val externalScope: CoroutineScope,
@@ -68,29 +71,31 @@ class EventsRepositoryImpl @Inject constructor(
     override suspend fun getPublicEventsByDate(date: Calendar): Flow<List<PublicEvent>> {
 
         if (latestPublicEvents.isEmpty()){
-            return   eventsFirestoreDataSource
+            return eventsFirestoreDataSource
                 .getPublicEvents()
-                .onEach { publicEvents->
+                .map { publicEvents->
                     publicEvents.filter { publicEvent ->
 
                         val eventDate = clearSecMinHour(publicEvent.eventDate)
 
                         val wantedDate = clearSecMinHour(date)
 
-                        eventDate.timeInMillis == wantedDate.timeInMillis
+                        eventDate[Calendar.DAY_OF_MONTH] == wantedDate[Calendar.DAY_OF_MONTH] &&
+                                eventDate[Calendar.MONTH] == wantedDate[Calendar.MONTH]
                     }
                 }
         }
 
         return  flow {
-            val filteredEvents = latestPublicEvents.filter { publicEvent ->
+           val eventsCopy = latestPublicEvents
+            eventsCopy.map { publicEvent ->
                 val eventDate = clearSecMinHour(publicEvent.eventDate)
 
                 val wantedDate = clearSecMinHour(date)
 
                 eventDate.timeInMillis == wantedDate.timeInMillis
             }
-            emit(filteredEvents)
+            emit(eventsCopy)
         }
 
     }
@@ -107,10 +112,10 @@ class EventsRepositoryImpl @Inject constructor(
         eventsFirestoreDataSource.deletePublicEvent(publicEvent)
     }
 
-    private fun clearSecMinHour(date:Calendar):Calendar {
-        date.clear(Calendar.SECOND)
-        date.clear(Calendar.MINUTE)
-        date.clear(Calendar.HOUR)
+    private fun clearSecMinHour(date: Calendar): Calendar {
+        date.set(Calendar.SECOND,0)
+        date.set(Calendar.MINUTE,0)
+        date.set(Calendar.HOUR_OF_DAY,0)
         return date
     }
 

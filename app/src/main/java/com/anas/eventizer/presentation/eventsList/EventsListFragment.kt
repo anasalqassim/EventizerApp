@@ -14,12 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anas.eventizer.R
 import com.anas.eventizer.databinding.FragmentEventsListBinding
 import com.anas.eventizer.presentation.eventsList.adapters.PublicEventsRvAdapter
-import com.anas.eventizer.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import java.util.*
 
 private const val TAG = "EventsListFragment"
 @AndroidEntryPoint
@@ -33,13 +29,15 @@ class EventsListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.getPublicEvents()
+        val tomorrow = Calendar.getInstance()
+        tomorrow.set(Calendar.DAY_OF_MONTH,20)
+        Log.d(TAG, "onCreate: ${tomorrow[Calendar.DAY_OF_MONTH]}")
+        viewModel.getPublicEvents(tomorrow)
     }
 
     private fun init() {
 
-        val dividerDrawable = ContextCompat.getDrawable(requireContext(),
-            R.drawable.divider)
+        val dividerDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.divider)
         binding.publicEventsRv.apply {
             this.setHasFixedSize(true)
             val dividerItemDecoration = DividerItemDecoration(
@@ -54,12 +52,36 @@ class EventsListFragment : Fragment() {
         }
     }
 
+    private fun setListeners(){
+        binding.chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+            when{
+                checkedIds[0] == binding.todayChip.id ->{
+                    binding.publicEventsRv.adapter = PublicEventsRvAdapter(emptyList())
+
+                    val todayDate = Calendar.getInstance()
+
+                    viewModel.getPublicEvents(todayDate)
+                }
+                checkedIds[0] == binding.tomorrowChip.id ->{
+                    binding.publicEventsRv.adapter = PublicEventsRvAdapter(emptyList())
+
+                    val tomorrow = Calendar.getInstance()
+                    tomorrow.roll(Calendar.DAY_OF_MONTH,1)
+
+                    viewModel.getPublicEvents(tomorrow)
+                }
+            }
+
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEventsListBinding.inflate(inflater, container, false)
         init()
+        setListeners()
       return  binding.root
     }
 
