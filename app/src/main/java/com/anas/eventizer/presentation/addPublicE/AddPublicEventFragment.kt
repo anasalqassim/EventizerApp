@@ -1,24 +1,32 @@
 package com.anas.eventizer.presentation.addPublicE
 
+import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
+import android.widget.CalendarView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.registerForActivityResult
-import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
+import androidx.core.content.res.ResourcesCompat.ThemeCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.anas.eventizer.R
-import com.anas.eventizer.data.remote.dto.PublicEventDto
+import com.anas.eventizer.databinding.FragmentAddPublicEventBinding
 import com.anas.eventizer.utils.Resource
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+
 
 private const val TAG = "AddPublicEventFragment"
 @AndroidEntryPoint
@@ -27,34 +35,121 @@ class AddPublicEventFragment : Fragment() {
 
     private val viewModel: AddPublicEventViewModel by viewModels()
 
+    private lateinit var _binding:FragmentAddPublicEventBinding
+    private val binding get() = _binding
+    private var numOfTakenPics = 0
+
+    private val imagesURIs = mutableListOf<Uri>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_add_public_event, container, false)
+    ): View {
+        _binding = FragmentAddPublicEventBinding.inflate(inflater, container, false)
+
+
+        return _binding.root
     }
 
-    private val public = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+    private val imagesLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+
+        when (it.resultCode) {
+            Activity.RESULT_OK -> {
+                if (numOfTakenPics != 4){
+                    if (checkCameraPermissions()){
+                        takeImageFromCamera()
+                        numOfTakenPics++
+                    }
+                }else{
+                    numOfTakenPics = 0
+                    val dataClips = it.data?.clipData
+                    if (dataClips != null){
+                        for ( uriIndex in 0..dataClips.itemCount){
+                            imagesURIs +=  dataClips.getItemAt(uriIndex).uri
+                        }
+                    }
+                }
+
+
+
+            }
+        }
 
     }
+
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){result ->
+        if (result){
+            takeImageFromCamera()
+        }
+    }
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){ result ->
+        if (result){
+            chooseImageFromGallery()
+        }
+    }
+
+
+
+
+    private fun chooseImageFromGallery(){
+        val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
+        galleryIntent.type = "image/*"
+        galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        val intentChooser = Intent.createChooser(galleryIntent,"Choose image")
+        imagesLauncher.launch(intentChooser)
+    }
+
+    private fun takeImageFromCamera(){
+
+        val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+        imagesLauncher.launch(takePicture)
+    }
+
+    private fun checkCameraPermissions():Boolean
+        =  ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+
+    private fun checkGalleryPermissions():Boolean
+            =  ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.READ_EXTERNAL_STORAGE) ==
+            PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+            PackageManager.PERMISSION_GRANTED
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val intent = Intent()
-
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        val intentChooser = Intent.createChooser(intent,"aa")
-
-        public.launch(intentChooser, ActivityOptionsCompat.makeBasic())
+        binding.chooseImagesBtn.setOnClickListener {
 
 
-//        val links = listOf("https://t4.ftcdn.net/jpg/02/89/38/41/360_F_289384108_fyDlnvX03W7WDaFPfQ6aPY8KgLTY93Yf.jpg","https://images.unsplash.com/photo-1503249023995-51b0f3778ccf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8aGQlMjBwaG90b3N8ZW58MHx8MHx8&w=1000&q=80")
-//        for (x in 0..100){
-//            val publicEventDto = PublicEventDto(eventPicsUrls = links)
-//            viewModel.addPublicEvent(publicEventDto)
-//        }
+           context?.let { context ->
+               MaterialAlertDialogBuilder(
+                   context,
+                   com.google.android.material.R.style.ThemeOverlay_MaterialComponents_Dialog_Alert
+               )
+
+                   .setMessage("hgiuygigiugkhkjhjh")
+                   .setNegativeButton("cam") { _, _ ->
+                      if (checkCameraPermissions()){
+                          takeImageFromCamera()
+                      }else{
+                          cameraLauncher.launch(Manifest.permission.CAMERA)
+                      }
+                   }
+                   .setPositiveButton("Gall") { _, _ ->
+                       if (checkGalleryPermissions()){
+                           chooseImageFromGallery()
+                       }else{
+                           galleryLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                       }
+                   }
+                   .show()
+           }
+
+       }
+
+
+
         viewModel.addingStateFlow.onEach {
             when(it){
                 is Resource.Error ->{
