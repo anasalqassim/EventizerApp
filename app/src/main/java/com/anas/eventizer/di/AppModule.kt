@@ -10,6 +10,7 @@ import com.anas.eventizer.data.repo.AuthRepositoryImpl
 import com.anas.eventizer.data.repo.EventsRepositoryImpl
 import com.anas.eventizer.domain.repo.AuthRepository
 import com.anas.eventizer.domain.repo.EventsRepository
+import com.anas.eventizer.presentation.addPublicE.adapter.ImagesAdapter
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseAuth
@@ -20,6 +21,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -171,4 +173,8 @@ object AppModule {
     fun providesEventsTasksDataSource(workManager: WorkManager) =
         EventsTasksDataSource(workManager)
 
+
+    @Provides
+    @Named("addPublicEventAdapter")
+    fun bindAddPublicEventAdapter():ImagesAdapter = ImagesAdapter()
 }
