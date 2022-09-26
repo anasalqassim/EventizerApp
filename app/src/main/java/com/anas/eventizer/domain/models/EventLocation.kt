@@ -1,8 +1,8 @@
 package com.anas.eventizer.domain.models
 
-import com.google.type.LatLng
+import com.google.android.gms.maps.model.LatLng
 
 data class EventLocation(
-    var latLng: LatLng? ,
-    var placeId:String?
+    var latLng: LatLng? = null ,
+    var placeId:String? = null
 )

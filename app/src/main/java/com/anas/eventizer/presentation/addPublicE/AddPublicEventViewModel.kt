@@ -1,5 +1,6 @@
 package com.anas.eventizer.presentation.addPublicE
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anas.eventizer.data.remote.dto.PublicEventDto
@@ -24,8 +25,8 @@ class AddPublicEventViewModel @Inject constructor(
     val addingStateFlow: StateFlow<Resource<Unit>> = _addingStateFlow
 
 
-    fun addPublicEvent(publicEventDto: PublicEventDto){
-        addPublicEventUC(publicEventDto).onEach { result ->
+    fun addPublicEvent(publicEventDto: PublicEventDto,imageUris:List<Uri>){
+        addPublicEventUC(publicEventDto,imageUris).onEach { result ->
             when(result){
                 is Resource.Error -> {
                     _addingStateFlow.value = Resource.Error(massage = result.massage!!)

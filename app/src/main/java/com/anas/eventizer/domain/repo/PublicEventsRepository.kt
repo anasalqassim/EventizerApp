@@ -1,5 +1,6 @@
 package com.anas.eventizer.domain.repo
 
+import android.net.Uri
 import com.anas.eventizer.data.remote.dto.PersonalEventDto
 import com.anas.eventizer.data.remote.dto.PublicEventDto
 import com.anas.eventizer.domain.models.PersonalEvent
@@ -17,6 +18,6 @@ interface PublicEventsRepository {
 
     suspend fun deletePublicEvent(publicEvent: PublicEvent)
 
-    suspend fun addPublicEvent(publicEventDto: PublicEventDto)
+    suspend fun addPublicEvent(publicEventDto: PublicEventDto,imageUris:List<Uri>)
 
 }

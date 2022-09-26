@@ -1,6 +1,6 @@
 package com.anas.eventizer.data.repo
 
-import android.util.Log
+import android.net.Uri
 import com.anas.eventizer.data.remote.EventsFirestoreDataSource
 import com.anas.eventizer.data.remote.EventsTasksDataSource
 import com.anas.eventizer.data.remote.dto.PersonalEventDto
@@ -41,15 +41,26 @@ class EventsRepositoryImpl @Inject constructor(
 
 
 
-    override suspend fun uploadEventImages(
+    override suspend fun uploadEventPlaceImages(
         eventId: String,
         eventType: String
     ) {
-        eventsFirestoreDataSource.uploadEventImages(eventId,eventType)
+        eventsFirestoreDataSource.uploadEventPlaceImages(eventId,eventType)
     }
 
-    override suspend fun addPublicEvent(publicEventDto: PublicEventDto) {
-        eventsFirestoreDataSource.addPublicEvent(publicEventDto)
+    override suspend fun uploadEventUserTakenImages(
+        eventId: String,
+        eventType: String,
+        imageUris:Array<String>
+    ) {
+//        eventsFirestoreDataSource
+//            .uploadEventUserTakenImages(eventId,eventType,imageUris)
+    }
+
+    override suspend fun addPublicEvent(publicEventDto: PublicEventDto,
+                                        imageUris: List<Uri>) {
+        eventsFirestoreDataSource.addPublicEvent(publicEventDto,imageUris)
+
 
     }
 
@@ -121,7 +132,7 @@ class EventsRepositoryImpl @Inject constructor(
 
     override suspend fun addPersonalEvent(personalEventDto: PersonalEventDto) {
         eventsFirestoreDataSource.addPersonalEvent(personalEventDto)
-        eventsTasksDataSource.uploadEventImages()
+        eventsTasksDataSource.uploadEventPlaceImages()
     }
 
     override suspend fun getPersonalEvents(userId: String,refresh:Boolean): List<PersonalEvent> {

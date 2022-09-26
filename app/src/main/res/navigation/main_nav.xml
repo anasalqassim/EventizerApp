@@ -34,5 +34,31 @@
         android:id="@+id/addPublicEventFragment"
         android:name="com.anas.eventizer.presentation.addPublicE.AddPublicEventFragment"
         android:label="fragment_add_public_event"
-        tools:layout="@layout/fragment_add_public_event" />
+        tools:layout="@layout/fragment_add_public_event" >
+        <action
+            android:id="@+id/action_addPublicEventFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment"
+            app:popUpTo="@id/addPublicEventFragment" />
+        <argument
+            android:name="longitude"
+            android:defaultValue="-1"
+            app:argType="string" />
+        <argument android:name="latitude"
+            android:defaultValue="-1"
+            app:argType="string" />
+        <argument
+            android:name="placeId"
+            app:argType="string"
+            android:defaultValue="null"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.anas.eventizer.presentation.maps.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_addPublicEventFragment"
+            app:destination="@id/addPublicEventFragment" />
+    </fragment>
 </navigation>

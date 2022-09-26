@@ -1,8 +1,9 @@
 package com.anas.eventizer.data.remote
 
 import android.content.Context
+import android.net.Uri
 import android.security.keystore.UserNotAuthenticatedException
-import android.util.Log
+import androidx.core.net.toUri
 import com.anas.eventizer.data.EventNotOwnedByUserException
 import com.anas.eventizer.data.EventsDataStore
 import com.anas.eventizer.data.remote.dto.*
@@ -16,12 +17,8 @@ import com.kiwimob.firestore.coroutines.await
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -54,8 +51,10 @@ class EventsFirestoreDataSource @Inject constructor(
 
     }
 
-    suspend fun uploadEventImages(eventId: String,
-                                  eventType: String){
+    suspend fun uploadEventPlaceImages(eventId: String,
+                                       eventType: String){
+
+
         if (eventType == PUBLIC_EVENT_KEY){
             val event = publicEventCollection.document(eventId).get().await().toObject(PublicEventDto::class.java)
 
@@ -110,6 +109,48 @@ class EventsFirestoreDataSource @Inject constructor(
 
                     }
             }
+        }
+
+    }
+
+    suspend fun uploadEventUserTakenImages(eventId: String,
+                                           eventType: String,
+                                           eventImageURIs:List<Uri>
+    ){
+        if (eventType == PUBLIC_EVENT_KEY){
+            //val event = publicEventCollection.document(eventId).get().await().toObject(PublicEventDto::class.java)
+            val imageUrls = mutableListOf<String>()
+            for (imgUri in eventImageURIs){
+                val imageName = "xx1/${eventId}" +
+                        "${System.currentTimeMillis()}"
+
+                val uploadRef = publicEventStorageRef.child(imageName)
+                val uploadTask = uploadRef.putFile(imgUri)
+                uploadTask.await()
+               imageUrls.add(uploadRef.downloadUrl.await().toString())
+
+            }
+            publicEventCollection
+                .document(eventId)
+                .set(mapOf("eventPicsUrls" to imageUrls), SetOptions.merge())
+                .await()
+        }else{
+            val event = personalEventCollection.document(eventId).get().await().toObject(PersonalEventDto::class.java)
+            val imageUrls = mutableListOf<String>()
+            for (imgUri in eventImageURIs){
+                val imageName = "${event?.eventOwnerId}/${event?.id}" +
+                        "${System.currentTimeMillis()}"
+
+                val uploadRef = personalEventStorageRef.child(imageName)
+                val uploadTask = uploadRef.putFile(imgUri)
+                uploadTask.await()
+                imageUrls.add(uploadRef.downloadUrl.await().toString())
+
+            }
+            personalEventCollection
+                .document(eventId)
+                .set(mapOf("eventPicsUrls" to imageUrls), SetOptions.merge())
+                .await()
 
         }
 
@@ -180,7 +221,7 @@ class EventsFirestoreDataSource @Inject constructor(
      * this function will throw UserNotAuthenticatedException
      * if there is no logged in user
      */
-    suspend fun addPublicEvent(publicEventDto: PublicEventDto){
+    suspend fun addPublicEvent(publicEventDto: PublicEventDto,imageUris:List<Uri>){
         val currentUser = firebaseAuth.currentUser
         if (currentUser != null){
             val newDoc = publicEventCollection.document()
@@ -194,6 +235,12 @@ class EventsFirestoreDataSource @Inject constructor(
             newDoc
                 .set(publicEventDto)
                 .await()
+
+            uploadEventUserTakenImages(
+                publicEventDto.id,
+                PUBLIC_EVENT_KEY,
+                imageUris
+            )
 
 
         }else{

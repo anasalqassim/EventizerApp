@@ -2,6 +2,7 @@ package com.anas.eventizer.presentation.addPublicE
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -10,36 +11,59 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
-import android.widget.CalendarView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.IntentCompat
-import androidx.core.content.res.ResourcesCompat.ThemeCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import com.anas.eventizer.R
+import com.anas.eventizer.data.remote.dto.EventLocationDto
+import com.anas.eventizer.data.remote.dto.PublicEventDto
 import com.anas.eventizer.databinding.FragmentAddPublicEventBinding
+import com.anas.eventizer.presentation.addPublicE.adapter.ImagesAdapter
+import com.anas.eventizer.presentation.maps.MapsFragment
 import com.anas.eventizer.utils.Resource
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.util.Calendar
+import javax.inject.Inject
+import javax.inject.Named
 
 
 private const val TAG = "AddPublicEventFragment"
 @AndroidEntryPoint
-class AddPublicEventFragment : Fragment() {
+class AddPublicEventFragment : Fragment(),OnClickListener {
 
 
     private val viewModel: AddPublicEventViewModel by viewModels()
 
+    private val navArgs:AddPublicEventFragmentArgs by navArgs()
+
+    @Inject
+    @Named("addPublicEventAdapter")
+    lateinit var imagesAdapter: ImagesAdapter
+
     private lateinit var _binding:FragmentAddPublicEventBinding
     private val binding get() = _binding
-    private var numOfTakenPics = 0
 
     private val imagesURIs = mutableListOf<Uri>()
+
+    companion object{
+        fun navigateToAddPublicEventFragment(fragment: Fragment){
+            fragment.findNavController().navigate(R.id.addPublicEventFragment)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +71,9 @@ class AddPublicEventFragment : Fragment() {
     ): View {
         _binding = FragmentAddPublicEventBinding.inflate(inflater, container, false)
 
+        initComponents()
+
+        setListeners()
 
         return _binding.root
     }
@@ -55,24 +82,22 @@ class AddPublicEventFragment : Fragment() {
 
         when (it.resultCode) {
             Activity.RESULT_OK -> {
-                if (numOfTakenPics != 4){
-                    if (checkCameraPermissions()){
-                        takeImageFromCamera()
-                        numOfTakenPics++
-                    }
-                }else{
-                    numOfTakenPics = 0
+
+
                     val dataClips = it.data?.clipData
                     if (dataClips != null){
-                        for ( uriIndex in 0..dataClips.itemCount){
+                        for ( uriIndex in 0 until dataClips.itemCount){
                             imagesURIs +=  dataClips.getItemAt(uriIndex).uri
                         }
                     }
+                    imagesAdapter.imageURIs = imagesURIs
+
+
                 }
 
 
 
-            }
+
         }
 
     }
@@ -89,8 +114,6 @@ class AddPublicEventFragment : Fragment() {
     }
 
 
-
-
     private fun chooseImageFromGallery(){
         val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
         galleryIntent.type = "image/*"
@@ -103,7 +126,7 @@ class AddPublicEventFragment : Fragment() {
 
         val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
-        imagesLauncher.launch(takePicture)
+        imagesLauncher.launch(takePicture, ActivityOptionsCompat.makeBasic())
     }
 
     private fun checkCameraPermissions():Boolean
@@ -115,36 +138,56 @@ class AddPublicEventFragment : Fragment() {
             ContextCompat.checkSelfPermission(requireContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
             PackageManager.PERMISSION_GRANTED
 
+    private fun initComponents(){
 
+        binding.imagesRv.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
+            PagerSnapHelper().attachToRecyclerView(this)
+            adapter = imagesAdapter
+        }
+
+
+    }
+
+    private fun showDialog(context: Context){
+
+
+            MaterialAlertDialogBuilder(
+                context,
+                com.google.android.material.R.style.ThemeOverlay_MaterialComponents_Dialog_Alert
+            )
+
+                .setMessage("hgiuygigiugkhkjhjh")
+                .setNegativeButton("cam") { _, _ ->
+                    if (checkCameraPermissions()){
+                        takeImageFromCamera()
+                    }else{
+                        cameraLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                }
+                .setPositiveButton("Gall") { _, _ ->
+                    if (checkGalleryPermissions()){
+                        chooseImageFromGallery()
+                    }else{
+                        galleryLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    }
+                }
+                .show()
+
+    }
+
+    private fun setListeners(){
+        binding.submitBtn.setOnClickListener(this)
+        binding.openMapTv.setOnClickListener(this)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.chooseImagesBtn.setOnClickListener {
 
+            showDialog(requireContext())
 
-           context?.let { context ->
-               MaterialAlertDialogBuilder(
-                   context,
-                   com.google.android.material.R.style.ThemeOverlay_MaterialComponents_Dialog_Alert
-               )
-
-                   .setMessage("hgiuygigiugkhkjhjh")
-                   .setNegativeButton("cam") { _, _ ->
-                      if (checkCameraPermissions()){
-                          takeImageFromCamera()
-                      }else{
-                          cameraLauncher.launch(Manifest.permission.CAMERA)
-                      }
-                   }
-                   .setPositiveButton("Gall") { _, _ ->
-                       if (checkGalleryPermissions()){
-                           chooseImageFromGallery()
-                       }else{
-                           galleryLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                       }
-                   }
-                   .show()
-           }
 
        }
 
@@ -164,6 +207,42 @@ class AddPublicEventFragment : Fragment() {
             }
         }.launchIn(lifecycleScope)
     }
+
+
+    override fun onClick(v: View?) {
+        when(v){
+            binding.submitBtn ->{
+                    val title = binding.eventTxtInput.editText?.text.toString()
+                    val date = Calendar.Builder().setInstant(binding.calendarView.date).build()
+                    val category = binding.categotySpinner.selectedItem.toString()
+                    val lng = navArgs.longitude.toDoubleOrNull()
+                    val lat = navArgs.latitude.toDoubleOrNull()
+
+                   val latLng =  if (lng != null && lat != null ) {
+                        com.google.android.gms.maps.model.LatLng(lat,lng)
+                    }else{
+                       null
+                   }
+                    val eventLocationDto = EventLocationDto(latLng = latLng,placeId = navArgs.placeId)
+                    val publicEventDto = PublicEventDto(
+                        eventName = title,
+                        eventDate = date.time,
+                        eventCategory = category,
+                        eventLocation = eventLocationDto
+                    )
+
+                    viewModel.addPublicEvent(publicEventDto,imagesURIs)
+
+            }
+
+            binding.openMapTv ->{
+                MapsFragment.navigateToMapsFragment(this)
+            }
+        }
+    }
+
+
+
 
 
 }
