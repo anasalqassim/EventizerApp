@@ -18,7 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 import java.util.Date
 
-private const val TAG = "MainActivity"
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
