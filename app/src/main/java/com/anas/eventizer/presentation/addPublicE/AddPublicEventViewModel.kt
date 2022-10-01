@@ -1,10 +1,11 @@
 package com.anas.eventizer.presentation.addPublicE
 
 import android.net.Uri
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anas.eventizer.data.remote.dto.PublicEventDto
-import com.anas.eventizer.domain.models.PublicEvent
 import com.anas.eventizer.domain.useCase.AddPublicEventUC
 import com.anas.eventizer.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,9 +15,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
+private const val TAG = "AddPublicEventViewModel"
+
 @HiltViewModel
 class AddPublicEventViewModel @Inject constructor(
-    private val addPublicEventUC: AddPublicEventUC
+    private val addPublicEventUC: AddPublicEventUC,
+    private val state: SavedStateHandle
+
 ): ViewModel() {
 
     private val _addingStateFlow: MutableStateFlow<Resource<Unit>> =
@@ -40,5 +45,16 @@ class AddPublicEventViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
     }
+
+
+//    fun saveEventFields(title:String,date:Long,categoryPos:Int,imagesUrIs:List<Uri>){
+//        state["title"] = title
+//        state["date"] = date
+//        state["categoryPos"] = categoryPos
+//        state["imagesUrIs"] = imagesUrIs
+//        Log.d(TAG, "saveEventFields: ${state.get<String>("title")}")
+//
+//    }
+//    fun getEventTitle():String? {return state.get<String>("title") }
 
 }

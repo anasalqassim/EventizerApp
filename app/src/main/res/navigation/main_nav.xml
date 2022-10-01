@@ -51,6 +51,25 @@
             app:argType="string"
             android:defaultValue="null"
             app:nullable="true" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            android:defaultValue="-1"
+            app:nullable="true" />
+        <argument
+            android:name="date"
+            app:argType="long"
+            android:defaultValue="0L" />
+        <argument
+            android:name="imagesUrIs"
+            app:nullable="true"
+
+            app:argType="android.net.Uri[]"
+            android:defaultValue="@null" />
+        <argument
+            android:name="categoryPos"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
@@ -60,5 +79,24 @@
         <action
             android:id="@+id/action_mapsFragment_to_addPublicEventFragment"
             app:destination="@id/addPublicEventFragment" />
+
+        <argument
+            android:name="title"
+            app:argType="string"
+            android:defaultValue="-1"
+            app:nullable="true" />
+        <argument
+            android:name="date"
+            app:argType="long"
+            android:defaultValue="0L" />
+        <argument
+            android:name="imagesUrIs"
+            app:nullable="true"
+
+            app:argType="android.net.Uri[]" />
+        <argument
+            android:name="categoryPos"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 </navigation>

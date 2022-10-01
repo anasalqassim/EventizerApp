@@ -20,19 +20,6 @@ class UploadUserTakenImagesWorker @AssistedInject constructor(
 ) : CoroutineWorker(context,prams)  {
     override suspend fun doWork(): Result {
 
-        val eventId = EventsDataStore.getEventId(context).first()
-        val eventType = EventsDataStore.getEventType(context).first()
-
-        val imageUris = inputData
-            .getStringArray(EventsTasksDataSource.IMAGES_URI_KEY)
-
-
-
-
-
-        if (eventId != "none" && eventType != "none" && imageUris != null){
-            eventsRepository.uploadEventUserTakenImages(eventId,eventType,imageUris)
-        }
 
         return Result.success()
     }

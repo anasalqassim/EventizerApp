@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.anas.eventizer.R
 import com.anas.eventizer.databinding.FragmentMapsBinding
 
@@ -24,12 +26,15 @@ class MapsFragment : Fragment() {
     private var longitude : String = ""
     private var latitude : String = ""
 
+    private val navArgs:MapsFragmentArgs by navArgs()
+
     private lateinit var _binding:FragmentMapsBinding
     private val binding get() = _binding
 
     companion object{
 
         fun navigateToMapsFragment(fragment: Fragment){
+
             fragment.findNavController().navigate(R.id.mapsFragment)
         }
 
@@ -96,7 +101,11 @@ class MapsFragment : Fragment() {
                 .actionMapsFragmentToAddPublicEventFragment(
                     longitude = longitude,
                     latitude = latitude,
-                    placeId = placeId
+                    placeId = placeId,
+                    imagesUrIs = navArgs.imagesUrIs,
+                    title = navArgs.title,
+                    date = navArgs.date,
+                    categoryPos = navArgs.categoryPos
                 )
             findNavController().navigate(navAction)
 

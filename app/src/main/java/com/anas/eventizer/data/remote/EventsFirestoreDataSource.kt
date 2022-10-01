@@ -113,9 +113,9 @@ class EventsFirestoreDataSource @Inject constructor(
 
     }
 
-    suspend fun uploadEventUserTakenImages(eventId: String,
-                                           eventType: String,
-                                           eventImageURIs:List<Uri>
+    private suspend fun uploadEventUserTakenImages(eventId: String,
+                                                   eventType: String,
+                                                   eventImageURIs:List<Uri>
     ){
         if (eventType == PUBLIC_EVENT_KEY){
             //val event = publicEventCollection.document(eventId).get().await().toObject(PublicEventDto::class.java)

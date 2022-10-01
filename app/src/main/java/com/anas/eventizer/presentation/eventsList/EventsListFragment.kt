@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anas.eventizer.R
@@ -26,6 +27,13 @@ class EventsListFragment : Fragment() {
 
     private lateinit var _binding:FragmentEventsListBinding
     private val binding get() = _binding
+
+    companion object{
+        fun navigateToEventsListFragment(fragment: Fragment){
+            fragment.findNavController().navigate(R.id.eventsListFragment)
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -48,14 +48,7 @@ class EventsRepositoryImpl @Inject constructor(
         eventsFirestoreDataSource.uploadEventPlaceImages(eventId,eventType)
     }
 
-    override suspend fun uploadEventUserTakenImages(
-        eventId: String,
-        eventType: String,
-        imageUris:Array<String>
-    ) {
-//        eventsFirestoreDataSource
-//            .uploadEventUserTakenImages(eventId,eventType,imageUris)
-    }
+
 
     override suspend fun addPublicEvent(publicEventDto: PublicEventDto,
                                         imageUris: List<Uri>) {
@@ -113,7 +106,7 @@ class EventsRepositoryImpl @Inject constructor(
 
     override suspend fun getPublicEventsById(userId: String): Flow<List<PublicEvent>> {
         return flow {
-            eventsFirestoreDataSource
+
         }
 
 
