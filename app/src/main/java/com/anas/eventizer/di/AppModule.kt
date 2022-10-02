@@ -74,8 +74,12 @@ object AppModule {
                                          @Named("publicEventsStorageRef")
                                          publicEventStorageRef:StorageReference,
                                          locationGoogleMapsDataSource: LocationGoogleMapsDataSource,
-                                         context: Application
-    ):EventsFirestoreDataSource =
+                                         context: Application,
+                                         authFirebaseAuthDataSource: AuthFirebaseAuthDataSource,
+                                         @Named("supportsCollection")
+                                         supportsCollectionRef:CollectionReference,
+
+                                         ):EventsFirestoreDataSource =
         EventsFirestoreDataSource(ioDispatcher,
             personalEventsCollection,
             publicEventsCollection,
@@ -83,9 +87,17 @@ object AppModule {
             locationGoogleMapsDataSource,
             personalEventStorageRef,
             publicEventStorageRef,
-            context)
+            context,
+            authFirebaseAuthDataSource,
+            supportsCollectionRef
+        )
 
 
+    @Provides
+    @Singleton
+    @Named("supportsCollection")
+    fun providesSupportsCollectionRef() :CollectionReference = Firebase.firestore
+        .collection("EventSupports")
 
     @Provides
     @Singleton
@@ -102,9 +114,7 @@ object AppModule {
     @Singleton
     fun providesAuthFirebaseDataSource(firebaseAuth: FirebaseAuth,
                                        @Named("usersCollection")
-                                       usersCollection: CollectionReference,
-                                       @Named("eventSupportersCollection")
-                                        eventSupportersCollection: CollectionReference
+                                       usersCollection: CollectionReference
     ):AuthFirebaseAuthDataSource =
         AuthFirebaseAuthDataSource(
             firebaseAuth,

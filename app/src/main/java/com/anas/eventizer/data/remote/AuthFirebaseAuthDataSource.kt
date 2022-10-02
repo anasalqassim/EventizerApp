@@ -67,7 +67,7 @@ class AuthFirebaseAuthDataSource @Inject constructor(
         }
     }
 
-    private suspend fun retrieveUserInfoFromDatabase(userId:String):UsersDto{
+     suspend fun retrieveUserInfoFromDatabase(userId:String):UsersDto{
         if (firebaseAuth.currentUser != null){
             return usersCollection
                 .document(userId)
@@ -94,6 +94,7 @@ class AuthFirebaseAuthDataSource @Inject constructor(
             throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
         }
     }
+
 
 
 

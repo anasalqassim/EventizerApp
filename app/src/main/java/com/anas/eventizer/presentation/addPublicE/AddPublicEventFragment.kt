@@ -77,10 +77,6 @@ class AddPublicEventFragment : Fragment(),OnClickListener {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -118,7 +114,6 @@ class AddPublicEventFragment : Fragment(),OnClickListener {
         }
 
     }
-
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){result ->
         if (result){
             takeImageFromCamera()
@@ -162,7 +157,9 @@ class AddPublicEventFragment : Fragment(),OnClickListener {
 
         title = if(argTitle != "-1") argTitle else ""
         binding.eventTxtInput.editText?.setText(title)
+
         date = Calendar.Builder().setInstant(navArgs.date).build()
+
         binding.calendarView.date = date.timeInMillis
         categoryPos = navArgs.categoryPos
         category = binding.categotySpinner.selectedItem.toString()
@@ -189,8 +186,7 @@ class AddPublicEventFragment : Fragment(),OnClickListener {
                 context,
                 com.google.android.material.R.style.ThemeOverlay_MaterialComponents_Dialog_Alert
             )
-
-                .setMessage("hgiuygigiugkhkjhjh")
+                .setMessage("")
                 .setNegativeButton("cam") { _, _ ->
                     if (checkCameraPermissions()){
                         takeImageFromCamera()
@@ -216,6 +212,7 @@ class AddPublicEventFragment : Fragment(),OnClickListener {
         binding.calendarView.setOnDateChangeListener { view, _, _, _ ->
             date = Calendar.Builder().setInstant(view.date).build()
         }
+
         binding.categotySpinner.onItemSelectedListener = object : OnItemSelectedListener{
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -237,17 +234,17 @@ class AddPublicEventFragment : Fragment(),OnClickListener {
             title = it.toString()
         }
 
-
-    }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         binding.chooseImagesBtn.setOnClickListener {
 
             showDialog(requireContext())
 
 
-       }
+        }
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
 
 
 
