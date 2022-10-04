@@ -33,9 +33,7 @@ class AddPersonalEventFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding =  FragmentAddPersonalEventBinding.inflate(layoutInflater, container, false)
-        binding.apply {
 
-        }
 
 
         return binding.root
@@ -43,8 +41,7 @@ class AddPersonalEventFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val personal = PersonalEventDto(eventLocation = EventLocationDto(null,"ChIJAAAAAAAAAAAR-fjafWVgaSM"))
-        addNewPersonalEvent(personal)
+
 
 
     }

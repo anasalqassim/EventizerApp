@@ -6,7 +6,7 @@ data class Support(
     var supportCost:String = "",
     var supportCategory:String = "",
     var supportOwnerId:String = "",
-    var supportPics:List<String>,
-    var supportDescriptionString: String
+    var supportPics:List<String> = emptyList(),
+    var supportDescriptionString: String = ""
 )
 
