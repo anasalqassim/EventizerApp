@@ -1,6 +1,7 @@
 package com.anas.eventizer.data.remote
 
 import android.content.Context
+import android.content.res.Resources.NotFoundException
 import android.net.Uri
 import android.security.keystore.UserNotAuthenticatedException
 import androidx.core.net.toUri
@@ -9,6 +10,7 @@ import com.anas.eventizer.data.EventsDataStore
 import com.anas.eventizer.data.remote.dto.*
 import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.models.PublicEvent
+import com.anas.eventizer.domain.models.Support
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.SetOptions
@@ -35,7 +37,11 @@ class EventsFirestoreDataSource @Inject constructor(
     private val personalEventStorageRef:StorageReference,
     @Named("publicEventsStorageRef")
     private val publicEventStorageRef:StorageReference,
-    private val context: Context
+    private val context: Context,
+    private val authDataSource: AuthFirebaseAuthDataSource,
+    @Named("supportsCollection")
+    private val supportsCollection: CollectionReference
+
 ) {
 
 
@@ -291,5 +297,96 @@ class EventsFirestoreDataSource @Inject constructor(
             throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
         }
     }
+
+
+
+    /**
+     * this function will throw UserNotAuthenticatedException
+     * if there is no logged in user and it will throw
+     * EventNotOwnedByUserException if the current user id
+     * dose not equal to the ownerId of the event
+     * and will throw IllegalAccessException if the user type not supporter
+     */
+    suspend fun addEventSupport(supportDto: SupportDto){
+
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser != null){
+            val databaseUser = authDataSource.retrieveUserInfoFromDatabase(currentUser.uid)
+            val supportDoc = supportsCollection.document()
+            supportDto.supportId = supportDoc.id
+            supportDto.supportOwnerId = currentUser.uid
+            if (databaseUser.userType == UsersDto.UsersTypes.SUPPORTER.name){
+                supportsCollection
+                    .document(supportDto.supportId)
+                    .set(supportDto)
+                    .await()
+            }else{
+                //TODO MAKE CONST CODE
+                throw IllegalAccessException("USER_NOT_SUPPORTER")
+            }
+        }else{
+            //TODO MAKE CONST CODE
+            throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
+        }
+    }
+
+    /**
+     * this function will throw UserNotAuthenticatedException
+     * if there is no logged in user and it will throw
+     * EventNotOwnedByUserException if the current user id
+     * dose not equal to the ownerId of the event
+     */
+    suspend fun deleteSupport(support: Support){
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser != null){
+            if (currentUser.uid == support.supportOwnerId){
+                supportsCollection
+                    .document(support.supportId)
+                    .delete()
+                    .await()
+            }else{
+                //TODO MAKE CONST CODE
+                throw EventNotOwnedByUserException("SUPPORT_NOT_OWNED_BY_USER")
+            }
+        }else{
+            //TODO MAKE CONST CODE
+            throw UserNotAuthenticatedException("USER_NOT_AUTHENTICATED")
+        }
+    }
+
+    suspend fun getSupportsByCategory(category:String):Flow<List<Support>> {
+        return  flow{
+          emit(supportsCollection
+                .whereEqualTo("supportCategory" , category)
+                .get()
+                .await()
+                .toObjects(SupportDto::class.java)
+                .map { it.toSupport()})
+        }
+    }
+
+    suspend fun getSupports():Flow<List<Support>> {
+        return  flow{
+            emit(supportsCollection
+                .get()
+                .await()
+                .toObjects(SupportDto::class.java)
+                .map { it.toSupport()})
+        }
+    }
+
+    suspend fun getSupportById(supportId:String):Flow<Support> {
+        return  flow{
+            emit(supportsCollection
+                .document(supportId)
+                .get()
+                .await()
+                .toObject(SupportDto::class.java)
+                ?.toSupport() ?: throw NotFoundException("SUPPORT_NOT_FOUND")
+            )
+        }
+    }
+
+
 
 }

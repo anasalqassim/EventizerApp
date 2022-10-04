@@ -15,7 +15,7 @@ class PublicEventViewHolder @Inject constructor (
     private val binding:PublicEventRowItemBinding
 ) : ViewHolder(binding.root) {
 
-    fun bind(state: PublicEventItemUiState,){
+    fun bind(state: PublicEventItemUiState){
 
         val layoutManager = LinearLayoutManager(binding.root.context,
             LinearLayoutManager.HORIZONTAL,
