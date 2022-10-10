@@ -14,7 +14,9 @@ import com.anas.eventizer.domain.models.Support
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.getField
 import com.google.firebase.storage.StorageReference
+import com.google.type.LatLng
 import com.kiwimob.firestore.coroutines.await
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -257,13 +259,30 @@ class EventsFirestoreDataSource @Inject constructor(
     suspend fun getPublicEvents():Flow<List<PublicEvent>>{
 
         return flow {
-
+                val docs =publicEventCollection
+                    .get()
+                    .await()
+                val publicEventsDto = mutableListOf<PublicEventDto>()
+                docs.forEach { doc ->
+                    val eventLocationH =  doc.get("eventLocation")!! as HashMap<String,Any>
+                    val latLngH = eventLocationH["latLng"] as HashMap<String,Double>
+                    val latLng = com.google.android.gms.maps.model.LatLng(latLngH["latitude"]!!,latLngH["longitude"]!!)
+                    val placeId = eventLocationH["placeId"] as String?
+                    val eventLocationDto = EventLocationDto(latLng = latLng, placeId = placeId)
+                    val publicEventDto = PublicEventDto(
+                        id = doc.get("id").toString(),
+                        eventName = doc.get("eventName").toString(),
+                        eventDate = doc.getDate("eventDate")!!,
+                        creationDate = doc.getDate("creationDate")!!,
+                        eventCategory = doc.get("eventCategory").toString(),
+                        eventPicsUrls = doc.get("eventPicsUrls")!! as List<String>,
+                        eventOwnerId = doc.get("eventOwnerId").toString(),
+                        eventLocation = eventLocationDto
+                        )
+                    publicEventsDto.add(publicEventDto)
+                }
                 emit(
-                    publicEventCollection
-                        .get()
-                        .await()
-                        .toObjects(PublicEventDto::class.java)
-                        .map { it.toPublicEvent() }
+                    publicEventsDto.map { it.toPublicEvent() }
                 )
 
         }

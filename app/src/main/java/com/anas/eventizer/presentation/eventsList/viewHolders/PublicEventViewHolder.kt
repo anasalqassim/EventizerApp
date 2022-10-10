@@ -31,7 +31,7 @@ class PublicEventViewHolder @Inject constructor (
 
 
         binding.titleTv.text = state.title
-        binding.dateTv.text = state.date
+
 
     }
 

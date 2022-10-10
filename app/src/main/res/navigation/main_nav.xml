@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav"
-    app:startDestination="@id/addPublicEventFragment">
+    app:startDestination="@id/eventsListFragment">
 
     <fragment
         android:id="@+id/eventsListFragment"
@@ -34,7 +34,7 @@
         android:id="@+id/addPublicEventFragment"
         android:name="com.anas.eventizer.presentation.addPublicE.AddPublicEventFragment"
         android:label="fragment_add_public_event"
-        tools:layout="@layout/fragment_add_public_event" >
+        tools:layout="@layout/fragment_add_public_event">
         <action
             android:id="@+id/action_addPublicEventFragment_to_mapsFragment"
             app:destination="@id/mapsFragment"
@@ -43,60 +43,61 @@
             android:name="longitude"
             android:defaultValue="-1"
             app:argType="string" />
-        <argument android:name="latitude"
+        <argument
+            android:name="latitude"
             android:defaultValue="-1"
             app:argType="string" />
         <argument
             android:name="placeId"
-            app:argType="string"
             android:defaultValue="null"
+            app:argType="string"
             app:nullable="true" />
         <argument
             android:name="title"
-            app:argType="string"
             android:defaultValue="-1"
+            app:argType="string"
             app:nullable="true" />
         <argument
             android:name="date"
-            app:argType="long"
-            android:defaultValue="0L" />
+            android:defaultValue="0L"
+            app:argType="long" />
         <argument
             android:name="imagesUrIs"
-            app:nullable="true"
+            android:defaultValue="@null"
 
             app:argType="android.net.Uri[]"
-            android:defaultValue="@null" />
+            app:nullable="true" />
         <argument
             android:name="categoryPos"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
         android:name="com.anas.eventizer.presentation.maps.MapsFragment"
         android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps" >
+        tools:layout="@layout/fragment_maps">
         <action
             android:id="@+id/action_mapsFragment_to_addPublicEventFragment"
             app:destination="@id/addPublicEventFragment" />
 
         <argument
             android:name="title"
-            app:argType="string"
             android:defaultValue="-1"
+            app:argType="string"
             app:nullable="true" />
         <argument
             android:name="date"
-            app:argType="long"
-            android:defaultValue="0L" />
+            android:defaultValue="0L"
+            app:argType="long" />
         <argument
             android:name="imagesUrIs"
-            app:nullable="true"
+            app:argType="android.net.Uri[]"
 
-            app:argType="android.net.Uri[]" />
+            app:nullable="true" />
         <argument
             android:name="categoryPos"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
     </fragment>
 </navigation>
