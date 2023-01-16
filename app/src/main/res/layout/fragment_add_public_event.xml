@@ -21,13 +21,13 @@ tools:context=".presentation.addPublicE.AddPublicEventFragment" >
             android:layout_height="match_parent">
 
 
-        <Button
-            android:id="@+id/chooseImagesBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/eventTxtInput" />
+            <Button
+                android:id="@+id/chooseImagesBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="add Image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/eventTxtInput" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/eventTxtInput"
@@ -125,7 +125,7 @@ tools:context=".presentation.addPublicE.AddPublicEventFragment" >
                 android:id="@+id/submitBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Button"
+                android:text="Submit"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />

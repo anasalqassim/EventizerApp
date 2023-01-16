@@ -16,13 +16,18 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.getField
 import com.google.firebase.storage.StorageReference
+import com.google.type.Date
 import com.google.type.LatLng
 import com.kiwimob.firestore.coroutines.await
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.temporal.TemporalField
+import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -199,6 +204,20 @@ class EventsFirestoreDataSource @Inject constructor(
                 .map { it.toPersonalEvent() }
         }
     }
+
+    suspend fun getPersonalEventById(eventId: String):Flow<PersonalEvent?>{
+        return flow {
+            emit(
+                personalEventCollection
+                    .document(eventId)
+                    .get()
+                    .await()
+                    .toObject(PersonalEventDto::class.java)
+                    ?.toPersonalEvent()
+            )
+        }
+    }
+
 
     /**
      * this function will throw UserNotAuthenticatedException

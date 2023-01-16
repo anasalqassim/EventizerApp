@@ -53,7 +53,7 @@ class EventsListViewModel @Inject constructor(
                                 val date = "$month $day"
 
                                 PublicEventItemUiState(
-                                    title = "كشته",
+                                    title = it.eventName,
                                     isOwner = false,
                                     eventPicsUrl = it.eventPicsUrls,
                                     eventLocation = it.eventLocation,

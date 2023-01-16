@@ -2,23 +2,25 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="110dp"
+    android:layout_width="99dp"
+    android:layout_height="135dp"
+    android:layout_margin="14dp"
     app:cardBackgroundColor="#F8F5F5"
     app:cardCornerRadius="36dp"
-    app:contentPadding="16dp">
+    app:cardElevation="3dp"
+    app:contentPadding="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:id="@+id/supportImage"
+            android:layout_width="0dp"
+            android:layout_height="90dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
@@ -27,10 +29,10 @@
             android:id="@+id/supportTitleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:fontFamily="monospace"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toTopOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/supportImage"
+            app:layout_constraintTop_toBottomOf="@+id/supportImage"
             tools:text="Title" />
 
         <TextView
@@ -41,27 +43,24 @@
             android:layout_marginTop="6dp"
             android:fontFamily="monospace"
             android:text="@string/category"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@+id/supportImage"
             app:layout_constraintTop_toBottomOf="@+id/supportTitleTv" />
 
         <TextView
             android:id="@+id/rateTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:text="4/4"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView3"
             app:layout_constraintStart_toEndOf="@+id/imageView3"
-            app:layout_constraintTop_toTopOf="@+id/imageView3" />
+            app:layout_constraintTop_toBottomOf="@+id/supportTitleTv" />
 
         <ImageView
             android:id="@+id/imageView3"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@+id/categoryTv"
+            android:layout_width="21dp"
+            android:layout_height="19dp"
+            app:layout_constraintStart_toStartOf="@+id/supportTitleTv"
+            app:layout_constraintTop_toBottomOf="@+id/supportTitleTv"
             app:srcCompat="@drawable/ic_baseline_star_rate_24" />
 
 

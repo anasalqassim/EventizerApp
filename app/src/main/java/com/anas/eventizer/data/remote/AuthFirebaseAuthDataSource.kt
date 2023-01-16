@@ -26,7 +26,6 @@ class AuthFirebaseAuthDataSource @Inject constructor(
         const val EVENTS_SUPPORTERS_COLLECTION_REF = "eventSupporters"
     }
 
-
     suspend fun loginUserByEmailAndPwd(email:String,pwd:String):Flow<User>
         = flow {
 

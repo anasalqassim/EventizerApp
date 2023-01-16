@@ -8,6 +8,7 @@ import com.anas.eventizer.data.remote.dto.PublicEventDto
 import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.models.PublicEvent
 import com.anas.eventizer.domain.repo.EventsRepository
+import com.anas.eventizer.presentation.calendar.toLocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
 
@@ -144,6 +146,18 @@ class EventsRepositoryImpl @Inject constructor(
             latestPersonalEventsMutex.withLock { this.latestPersonalEvents}
         }
 
+    }
+
+    override suspend fun getPersonalEventByDate(userId: String,localDate: LocalDate): PersonalEvent {
+
+
+        val personalEvents = getPersonalEvents(userId,false).filter {it.eventDate.toLocalDate() == localDate}
+
+        return personalEvents.first()
+    }
+
+    override suspend fun getPersonalEventById(eventId: String): Flow<PersonalEvent?> {
+        return eventsFirestoreDataSource.getPersonalEventById(eventId)
     }
 
     override suspend fun deletePersonalEvent(personalEvent: PersonalEvent) =

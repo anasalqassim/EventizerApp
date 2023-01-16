@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav"
-    app:startDestination="@id/eventsListFragment">
+    app:startDestination="@id/addPersonalEventFragment">
 
     <fragment
         android:id="@+id/eventsListFragment"
@@ -14,7 +14,11 @@
         android:id="@+id/calendarFragment"
         android:name="com.anas.eventizer.presentation.calendar.CalendarFragment"
         android:label="fragment_calendar"
-        tools:layout="@layout/fragment_calendar" />
+        tools:layout="@layout/fragment_calendar">
+        <action
+            android:id="@+id/action_calendarFragment_to_eventDetailsFragment"
+            app:destination="@id/eventDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.anas.eventizer.presentation.profile.ProfileFragment"
@@ -100,4 +104,23 @@
             android:defaultValue="0"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/eventDetailsFragment"
+        android:name="com.anas.eventizer.presentation.eventDetails.EventDetailsFragment"
+        android:label="fragment_event_details"
+        tools:layout="@layout/fragment_event_details">
+        <argument
+            android:name="eventId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/qrCodeFragment"
+        android:name="com.anas.eventizer.presentation.eventQrCode.QrCodeFragment"
+        android:label="fragment_qr_code"
+        tools:layout="@layout/fragment_qr_code" />
+    <fragment
+        android:id="@+id/addPersonalEventFragment"
+        android:name="com.anas.eventizer.presentation.addPersonalE.AddPersonalEventFragment"
+        android:label="fragment_add_personal_event"
+        tools:layout="@layout/fragment_add_personal_event" />
 </navigation>

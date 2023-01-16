@@ -37,10 +37,8 @@ class EventsListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val tomorrow = Calendar.getInstance()
-        tomorrow.set(Calendar.DAY_OF_MONTH,20)
-        Log.d(TAG, "onCreate: ${tomorrow[Calendar.DAY_OF_MONTH]}")
-        viewModel.getPublicEvents(tomorrow)
+        val today = Calendar.getInstance()
+        viewModel.getPublicEvents(today)
     }
 
     private fun init() {
@@ -58,19 +56,23 @@ class EventsListFragment : Fragment() {
             this.addItemDecoration(dividerItemDecoration)
             this.layoutManager = LinearLayoutManager(requireContext())
         }
+
+        binding.floatingActionButton.setOnClickListener {
+            findNavController().navigate(R.id.addPublicEventFragment)
+        }
     }
 
     private fun setListeners(){
-        binding.chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+        binding.chipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             when{
-                checkedIds[0] == binding.todayChip.id ->{
+                checkedIds.first() == binding.todayChip.id ->{
                     binding.publicEventsRv.adapter = PublicEventsRvAdapter(emptyList())
 
                     val todayDate = Calendar.getInstance()
 
                     viewModel.getPublicEvents(todayDate)
                 }
-                checkedIds[0] == binding.tomorrowChip.id ->{
+                checkedIds.first() == binding.tomorrowChip.id ->{
                     binding.publicEventsRv.adapter = PublicEventsRvAdapter(emptyList())
 
                     val tomorrow = Calendar.getInstance()
@@ -100,7 +102,7 @@ class EventsListFragment : Fragment() {
             viewModel.publicEventsStateFlow.collect { result ->
                 when{
                     result.errorMsg.isNotEmpty()-> {
-                        Log.d(TAG, "  ${result.errorMsg}")
+                        Log.d(TAG, " ${result.errorMsg}")
                     }
                     result.isLoading -> {
                         Log.d(TAG, "Loading.. the page gonna load ")

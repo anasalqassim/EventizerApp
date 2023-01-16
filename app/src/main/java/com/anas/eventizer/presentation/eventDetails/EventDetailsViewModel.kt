@@ -6,6 +6,7 @@ import com.anas.eventizer.domain.models.PersonalEvent
 import com.anas.eventizer.domain.models.PublicEvent
 import com.anas.eventizer.domain.useCase.DeletePersonalEventUC
 import com.anas.eventizer.domain.useCase.DeletePublicEventUC
+import com.anas.eventizer.domain.useCase.GetPersonalEventByIdUC
 import com.anas.eventizer.utils.Resource
 import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,45 +18,31 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EventDetailsViewModel @Inject constructor(
-    private val deletePublicEventUC: DeletePublicEventUC,
-    private val deletePersonalEventUC: DeletePersonalEventUC
+    private val getPersonalEventByIdUC: GetPersonalEventByIdUC
 ): ViewModel() {
-    private val _deletionStateFlow: MutableStateFlow<Resource<Unit>> =
+    private val _personalEventStateFlow: MutableStateFlow<Resource<PersonalEvent?>> =
         MutableStateFlow(Resource.Loading())
 
-    val deletionStateFlow: StateFlow<Resource<Unit>> = _deletionStateFlow
+    val personalEventStateFlow: StateFlow<Resource<PersonalEvent?>> = _personalEventStateFlow
 
 
-
-    fun deletePublicEvent(publicEvent: PublicEvent){
-        deletePublicEventUC(publicEvent).onEach { result ->
+    fun getPersonalEventById(eventId:String){
+        getPersonalEventByIdUC(eventId).onEach { result->
             when(result){
                 is Resource.Error -> {
-                    _deletionStateFlow.value = Resource.Error(massage = result.massage!!)
+                    _personalEventStateFlow.value = Resource.Error(massage = result.massage!!)
                 }
                 is Resource.Loading -> {
-                    _deletionStateFlow.value = Resource.Loading()
+                    _personalEventStateFlow.value = Resource.Loading()
                 }
                 is Resource.Success -> {
-                    _deletionStateFlow.value = Resource.Success(data = result.data!!)
+                    _personalEventStateFlow.value = Resource.Success(data = result.data)
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun deletePersonalEvent(personalEvent: PersonalEvent){
-        deletePersonalEventUC(personalEvent).onEach { result ->
-            when(result){
-                is Resource.Error -> {
-                    _deletionStateFlow.value = Resource.Error(massage = result.massage!!)
-                }
-                is Resource.Loading -> {
-                    _deletionStateFlow.value = Resource.Loading()
-                }
-                is Resource.Success -> {
-                    _deletionStateFlow.value = Resource.Success(data = result.data!!)
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
+
+
+
 }

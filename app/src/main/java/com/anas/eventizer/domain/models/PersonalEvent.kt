@@ -1,5 +1,7 @@
 package com.anas.eventizer.domain.models
 
+import com.anas.eventizer.presentation.calendar.toLocalDate
+import java.time.LocalDate
 import java.util.*
 
 data class PersonalEvent(
@@ -13,3 +15,8 @@ data class PersonalEvent(
     val eventLocation: EventLocation,
     var eventCategory: String
 )
+
+fun PersonalEvent.eventDateIdPair():Pair<String,LocalDate> {
+
+    return this.id to this.eventDate.toLocalDate()
+}
